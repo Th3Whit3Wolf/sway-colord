@@ -1,7 +1,7 @@
 use anyhow::Result;
-use chrono::{NaiveTime, Timelike, Utc};
-use async_std::task;
 use async_recursion::async_recursion;
+use async_std::task;
+use chrono::{NaiveTime, Timelike, Utc};
 
 use std::time::Duration;
 
@@ -10,7 +10,7 @@ mod config;
 pub use config::Config;
 
 const DAWN: u64 = 7 * 3600;
-const DUSK: u64 = (DAWN + 12) * 3600;
+const DUSK: u64 = 19 * 3600;
 const DAY: u64 = 24 * 3600;
 
 #[async_std::main]
