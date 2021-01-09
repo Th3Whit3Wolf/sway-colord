@@ -9,8 +9,11 @@ mod config;
 
 pub use config::Config;
 
-const DAWN: u64 = 7 * 3600;
-const DUSK: u64 = 19 * 3600;
+const DAWN_H: u64 = 7;
+const DUSK_H: u64 = DAWN_H + 12;
+const DAWN: u64 = DAWN_H * 3600;
+const DUSK: u64 = DUSK_H * 3600;
+
 const DAY: u64 = 24 * 3600;
 
 #[async_std::main]
@@ -38,6 +41,6 @@ async fn auto_change(time: u64, conf: Config) -> Result<()> {
         conf.set_light_mode().await?;
         task::sleep(Duration::from_secs(DUSK - time)).await;
     }
-    auto_change(time, conf).await?;
+    auto_change(time_as_secs(), conf).await?;
     Ok(())
 }
