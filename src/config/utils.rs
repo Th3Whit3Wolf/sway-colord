@@ -20,7 +20,7 @@ pub fn theme_file(path: PathBuf, line_starts_with: &str, insert_string: String) 
         .collect();
 
     for i in 0..lines.len() {
-        if lines[i].starts_with(line_starts_with) == true {
+        if lines[i].starts_with(line_starts_with) {
             if let Some(elem) = lines.get_mut(i) {
                 *elem = insert_string.clone();
             }

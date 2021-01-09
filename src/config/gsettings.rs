@@ -109,48 +109,22 @@ impl GSettings {
     }
 
     pub fn has_gtk_theme(&self) -> bool {
-        if self.dark_gtk_theme.is_some() && self.light_gtk_theme.is_some() {
-            true
-        } else {
-            false
-        }
+        self.dark_gtk_theme.is_some() && self.light_gtk_theme.is_some()
     }
 
     pub fn has_icon_theme(&self) -> bool {
-        if self.dark_icon_theme.is_some() && self.light_icon_theme.is_some() {
-            true
-        } else {
-            false
-        }
+        self.dark_icon_theme.is_some() && self.light_icon_theme.is_some()
     }
 
     pub fn has_cursor_theme(&self) -> bool {
-        if self.dark_cursor_theme.is_some() && self.light_cursor_theme.is_some() {
-            true
-        } else {
-            false
-        }
+        self.dark_cursor_theme.is_some() && self.light_cursor_theme.is_some()
     }
 
     pub fn has_font_name(&self) -> bool {
-        if self.dark_font_name.is_some() && self.light_font_name.is_some() {
-            true
-        } else {
-            false
-        }
+        self.dark_font_name.is_some() && self.light_font_name.is_some()
     }
 
     pub fn is_some(&self) -> bool {
-        if self.has_gtk_theme() {
-            true
-        } else if self.has_icon_theme() {
-            true
-        } else if self.has_cursor_theme() {
-            true
-        } else if self.has_font_name() {
-            true
-        } else {
-            false
-        }
+        self.has_gtk_theme() || self.has_icon_theme() || self.has_cursor_theme() || self.has_font_name()
     }
 }

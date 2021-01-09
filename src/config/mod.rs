@@ -40,7 +40,7 @@ impl Config {
     pub fn get() -> Result<Config> {
         let local_conf: Option<PathBuf> =
             xdg::BaseDirectories::with_prefix("sway-colord")?.find_config_file("config.ron");
-        let conf = if local_conf.is_some() == true {
+        let conf = if local_conf.is_some() {
             dbg!("Local config used");
             Config::read_config(
                 local_conf
@@ -48,7 +48,7 @@ impl Config {
                     .to_str()
                     .ok_or(anyhow!("Unable to convert PathBuf to &str"))?,
             )
-        } else if Path::new(GLOBAL_CONF).is_file() == true {
+        } else if Path::new(GLOBAL_CONF).is_file() {
             dbg!("Global config used");
             Config::read_config(GLOBAL_CONF)
         } else {

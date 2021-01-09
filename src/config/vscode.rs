@@ -55,10 +55,6 @@ impl VSCode {
         Ok(())
     }
     pub fn is_some(&self) -> bool {
-        if self.dark_theme.is_some() && self.light_theme.is_some() {
-            true
-        } else {
-            false
-        }
+        self.dark_theme.is_some() && self.light_theme.is_some()
     }
 }
