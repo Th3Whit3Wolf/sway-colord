@@ -125,6 +125,9 @@ impl GSettings {
     }
 
     pub fn is_some(&self) -> bool {
-        self.has_gtk_theme() || self.has_icon_theme() || self.has_cursor_theme() || self.has_font_name()
+        self.has_gtk_theme()
+            || self.has_icon_theme()
+            || self.has_cursor_theme()
+            || self.has_font_name()
     }
 }

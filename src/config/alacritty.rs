@@ -1,7 +1,7 @@
 use super::utils::theme_file;
-use serde::Deserialize;
 use anyhow::{anyhow, Result};
 use once_cell::sync::OnceCell;
+use serde::Deserialize;
 
 use std::path::PathBuf;
 #[derive(Debug, Deserialize)]
@@ -14,9 +14,9 @@ fn alacritty_yml() -> &'static PathBuf {
     static ALACRITTY_YML: OnceCell<PathBuf> = OnceCell::new();
     ALACRITTY_YML.get_or_init(|| {
         xdg::BaseDirectories::with_prefix("alacritty")
-        .expect("~/.config/alacritty doesn't exist")
-        .find_config_file("alacritty.yml")
-        .expect("Unable to read alacritty.yml")
+            .expect("~/.config/alacritty doesn't exist")
+            .find_config_file("alacritty.yml")
+            .expect("Unable to read alacritty.yml")
     })
 }
 
@@ -51,8 +51,7 @@ impl Alacritty {
             ALACRITTY_SETTINGS_STARTS_WITH,
             light_theme_insert,
         );
-                Ok(())
-
+        Ok(())
     }
     pub fn is_some(&self) -> bool {
         self.dark_theme.is_some() && self.light_theme.is_some()
