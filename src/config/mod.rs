@@ -1,4 +1,5 @@
 use anyhow::{anyhow, Result};
+use lighting::Lighting;
 use ron::de::from_reader;
 use serde::Deserialize;
 
@@ -7,6 +8,7 @@ use std::path::{Path, PathBuf};
 
 mod alacritty;
 mod gsettings;
+mod lighting;
 mod utils;
 mod vscode;
 
@@ -15,6 +17,7 @@ mod tests;
 
 pub use self::alacritty::Alacritty;
 pub use self::gsettings::GSettings;
+use self::lighting::{Keyboard, Monitor};
 pub use self::vscode::VSCode;
 
 const GLOBAL_CONF: &str = "/etc/sway-colord/config.ron";
@@ -23,6 +26,7 @@ const GLOBAL_CONF: &str = "/etc/sway-colord/config.ron";
 pub struct Config {
     pub alacritty: Alacritty,
     pub gsettings: GSettings,
+    pub lighting: Lighting,
     pub vscode: VSCode,
 }
 
@@ -68,6 +72,21 @@ impl Config {
                     light_cursor_theme: None,
                     light_font_name: None,
                 },
+                lighting: Lighting {
+                    monitor: Some(Monitor{
+                        device: String::from("amdgpu_bl0"),
+                        light_perc: 50,
+                        dark_perc: 20
+                    }
+                    ),
+                    keyboard: Some(Keyboard{
+                            device: String::from("asus::kbd_backlight"),
+                            light_perc: 0,
+                            dark_perc: 34,
+                    }
+                    )
+
+                },
                 vscode: VSCode {
                     light_theme: Some(String::from("Spacemacs - light")),
                     dark_theme: Some(String::from("Spacemacs - dark")),
@@ -84,6 +103,7 @@ impl Config {
         if self.vscode.is_some() {
             self.vscode.light_mode()?;
         }
+
         Ok(())
     }
     pub async fn set_dark_mode(&self) -> Result<()> {
