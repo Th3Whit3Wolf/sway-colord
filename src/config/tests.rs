@@ -1,4 +1,3 @@
-
 use super::Config;
 use ron::de::from_str;
 
@@ -17,11 +16,29 @@ const CONFIG: &str = "(
         light_cursor_theme: None,
         light_font_name: None,
     ),
+    lighting: Lighting(
+        monitor: Some(
+            Monitor(
+                device: \"amdgpu_bl0\",
+                light_perc: 50,
+                dark_perc: 20
+            )
+        ),
+        keyboard: Some(
+            Keyboard(
+                device: \"asus::kbd_backlight\",
+                light_perc: 0,
+                dark_perc: 34
+            )
+        )
+    ),
     vscode: VSCode(
         dark_theme: Some(\"Spacemacs - dark\"),
         light_theme: Some(\"Spacemacs - light\")
     )
 )";
+
+
 #[test]
 fn test_read_config() {
     let conf: Config = from_str(CONFIG).unwrap();
