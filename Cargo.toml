@@ -3,6 +3,7 @@ authors = ["David Karrick <the.white.wolf.is.1337@gmail.com>"]
 edition = "2018"
 name = "sway-colord"
 version = "0.1.0"
+
 [dependencies]
 anyhow = "1.0.37"
 async-recursion = "0.3.1"
@@ -11,6 +12,11 @@ once_cell = "1.5.2"
 ron = "0.6.4"
 swayipc-async = "2.0.0-alpha.2"
 xdg = "^2.1"
+zvariant = "2.4.0"
+zbus = "1.8.0"
+sunrise = "1.0.0"
+serde_json = "1.0.61"
+json5 = "0.3"
 
 [dependencies.async-std]
 features = ["attributes"]
@@ -19,6 +25,3 @@ version = "1"
 [dependencies.serde]
 features = ["serde_derive"]
 version = "1.0.60"
-c-recursion = "0.3.1"
-anyhow = "1.0.37"
-once_cell = "1.5.2"
