@@ -1,9 +1,14 @@
-use super::utils::theme_file;
-use anyhow::{anyhow, Result};
+use anyhow::Result;
+use json5;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
+use serde_json::{json, to_string_pretty, Value};
 
-use std::path::PathBuf;
+use std::{
+    fs::{self, File},
+    io::Write,
+    path::PathBuf,
+};
 
 #[derive(Debug, Deserialize)]
 pub struct VSCode {
@@ -21,40 +26,40 @@ fn vscode_settings() -> &'static PathBuf {
     })
 }
 
-const VSCODE_SETTINGS_STARTS_WITH: &str = "    \"workbench.colorTheme\"";
-
 impl VSCode {
     pub fn dark_mode(&self) -> Result<()> {
-        let dark_theme_insert = format!(
-            "{}: \"{}\",",
-            VSCODE_SETTINGS_STARTS_WITH,
-            self.dark_theme
-            .as_deref()
-            .ok_or(anyhow!("No dark mode for VSCode"))?
-        );
-        theme_file(
-            vscode_settings().to_owned(),
-            VSCODE_SETTINGS_STARTS_WITH,
-            dark_theme_insert,
-        );
+        if let Some(theme) = &self.dark_theme {
+            change_theme(&theme)?;
+        }
         Ok(())
     }
     pub fn light_mode(&self) -> Result<()> {
-        let light_theme_insert = format!(
-            "{}: \"{}\",",
-            VSCODE_SETTINGS_STARTS_WITH,
-            self.light_theme
-                .as_deref()
-                .ok_or(anyhow!("No light mode for VSCode"))?
-            );
-        theme_file(
-            vscode_settings().to_owned(),
-            VSCODE_SETTINGS_STARTS_WITH,
-            light_theme_insert,
-        );
+        if let Some(theme) = &self.light_theme {
+            change_theme(&theme)?;
+        }
         Ok(())
     }
     pub fn is_some(&self) -> bool {
         self.dark_theme.is_some() && self.light_theme.is_some()
     }
+}
+
+fn change_theme(theme: &str) -> Result<()> {
+    let data = fs::read_to_string(vscode_settings()).expect("Unable to read file");
+
+    // Parse the string of data into serde_json::Value.
+    let v: Value = json5::from_str(&data).expect("failure to convert");
+
+    let mut v: Value = serde_json::from_str(v.to_string().as_str())?;
+
+    match v.get_mut("workbench.colorTheme") {
+        Some(val) => *val = json!(theme),
+        None => println!("Theme not set"),
+    }
+
+    let mut f = File::create(vscode_settings()).expect("Unable to create file");
+    f.write_all(to_string_pretty(&v)?.as_bytes())
+        .expect("Unable to write data");
+    f.flush().expect("Error: Flushing  VSCodes settings.json");
+    Ok(())
 }
