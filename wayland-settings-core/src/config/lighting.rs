@@ -1,24 +1,24 @@
 use std::fs;
 
 use anyhow::{anyhow, Result};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use zbus::Connection;
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Monitor {
     pub device: String,
     pub light_perc: u64,
     pub dark_perc: u64,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Keyboard {
     pub device: String,
     pub light_perc: u64,
     pub dark_perc: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Lighting {
     pub monitor: Option<Monitor>,
     pub keyboard: Option<Keyboard>,
@@ -34,7 +34,6 @@ impl Lighting {
             let max_b = get_mon_max_brightness(dev.as_str())?;
             let cur_b = get_mon_current_brightness(dev.as_str())?;
             let cur_p = (cur_b as f64 / max_b as f64).round();
-            dbg!("Monitor: \nSet to {}({}%)\nMax: {}\nCurrent: {}({}%)\n",(dark_perc as f64 / 100.0 * max_b as f64).round(), dark_perc, max_b, cur_b, cur_p);
 
             if dark_perc < 100u64 && dark_perc != cur_p as u64 {
                 match sd_bus.call_method(
@@ -55,7 +54,6 @@ impl Lighting {
             let max_b = get_kbd_max_brightness(dev.as_str())?;
             let cur_b = get_kbd_current_brightness(dev.as_str())?;
             let cur_p = (cur_b as f64 / max_b as f64).round();
-            dbg!("Keyboard: \nSet to {}({}%)\nMax: {}\nCurrent: {}({}%)\n",(dark_perc as f64 / 100.0 * max_b as f64).round(), dark_perc, max_b, cur_b, cur_p);
 
             if dark_perc < 100u64 && dark_perc != cur_p as u64 {
                 match sd_bus.call_method(
@@ -81,7 +79,6 @@ impl Lighting {
             let max_b = get_mon_max_brightness(dev.as_str())?;
             let cur_b = get_mon_current_brightness(dev.as_str())?;
             let cur_p = (cur_b as f64 / max_b as f64 * 100.0).round();
-            dbg!("Monitor: \nSet to {}({}%)\nMax: {}\nCurrent: {}({}%)\n",(light_perc as f64 / 100.0 * max_b as f64).round(), light_perc, max_b, cur_b, cur_p);
 
             if light_perc < 100u64 && light_perc != cur_p as u64 {
                 match sd_bus.call_method(
@@ -102,7 +99,6 @@ impl Lighting {
             let max_b = get_kbd_max_brightness(dev.as_str())?;
             let cur_b = get_kbd_current_brightness(dev.as_str())?;
             let cur_p = (cur_b as f64 / max_b as f64 * 100.0).round();
-            dbg!("Keyboard: \nSet to {}({}%)\nMax: {}\nCurrent: {}({}%)\n",(light_perc as f64 / 100.0 * max_b as f64).round(), light_perc, max_b, cur_b, cur_p);
 
             if light_perc < 100u64 && light_perc != cur_p as u64 {
                 match sd_bus.call_method(

@@ -1,10 +1,10 @@
 use anyhow::{anyhow, Result};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use swayipc_async::Connection;
 
 const GSETTINGS: &str = "gsettings set org.gnome.desktop.interface";
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct GSettings {
     pub dark_gtk_theme: Option<String>,
     pub dark_icon_theme: Option<String>,
@@ -58,7 +58,6 @@ impl GSettings {
         }
         for cmd in v {
             connection.run_command(format!("exec {}", &cmd)).await?;
-            println!("{}", cmd)
         }
         Ok(())
     }
@@ -103,7 +102,6 @@ impl GSettings {
         }
         for cmd in v {
             connection.run_command(format!("exec {}", &cmd)).await?;
-            println!("{}", cmd)
         }
         Ok(())
     }

@@ -1,0 +1,23 @@
+[package]
+authors = ["David Karrick <the.white.wolf.is.1337@gmail.com>"]
+edition = "2018"
+name = "wayland-settings-core"
+version = "0.1.0"
+
+[dependencies]
+anyhow = "1.0.37"
+chrono = "0.4.19"
+ron = "0.6.4"
+swayipc-async = "2.0.0-alpha.2"
+dirs-next = "2.0.0"
+zbus = "1.8.0"
+serde_json = "1.0.61"
+json5 = "0.3"
+
+[dependencies.async-std]
+features = ["attributes"]
+version = "1"
+
+[dependencies.serde]
+features = ["serde_derive"]
+version = "1.0.60"
