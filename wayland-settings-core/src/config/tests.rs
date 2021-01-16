@@ -2,6 +2,7 @@ use super::Config;
 use ron::de::from_str;
 
 const CONFIG: &str = "(
+    timechange: Solar(52.4045, 0.5613),
     alacritty: Alacritty(
         dark_theme: Some(\"dark\"),
         light_theme: Some(\"light\")
