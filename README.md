@@ -1,6 +1,6 @@
-# Sway Color Daemon
+# Wayland Color Daemon
 
-This is a WIP daemon for sway to automatically change light and dark themes based on the time of day.
+This is a WIP daemon for wayland (currently tested on sway) to automatically change light and dark themes based on the time of day, and strived to eventually become a settings daemon.
 
 ## What is currently supported?
 
@@ -8,7 +8,7 @@ Currently the following applications will switch between light and dark colorsch
 
 * Alacritty
 * Vscode
-* GTK
+* GTK (on sway)
   * GTK Theme
   * Icon Theme
   * Cursor Theme
