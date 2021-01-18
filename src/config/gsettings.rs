@@ -1,8 +1,8 @@
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
-use swayipc_async::Connection;
+use swayipc::Connection;
 
-const GSETTINGS: &str = "gsettings set org.gnome.desktop.interface";
+const GSETTINGS: &str = "exec gsettings set org.gnome.desktop.interface";
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct GSettings {
@@ -17,12 +17,11 @@ pub struct GSettings {
 }
 
 impl GSettings {
-    pub async fn dark_mode(&self) -> Result<()> {
+    pub fn dark_mode(&self) -> Result<()> {
         let mut v: Vec<String> = Vec::with_capacity(4);
-        let mut connection = Connection::new().await?;
         if self.has_gtk_theme() {
             v.push(format!(
-                "\t{} gtk-theme {}",
+                "{} gtk-theme {}",
                 GSETTINGS,
                 self.dark_gtk_theme
                     .as_deref()
@@ -31,7 +30,7 @@ impl GSettings {
         }
         if self.has_icon_theme() {
             v.push(format!(
-                "\t{} icon-theme {}",
+                "{} icon-theme {}",
                 GSETTINGS,
                 self.dark_icon_theme
                     .as_deref()
@@ -40,7 +39,7 @@ impl GSettings {
         }
         if self.has_cursor_theme() {
             v.push(format!(
-                "\t{} cursor-theme {}",
+                "{} cursor-theme {}",
                 GSETTINGS,
                 self.dark_cursor_theme
                     .as_deref()
@@ -49,24 +48,21 @@ impl GSettings {
         }
         if self.has_font_name() {
             v.push(format!(
-                "\t{} font-name {}",
+                "{} font-name {}",
                 GSETTINGS,
                 self.dark_font_name
                     .as_deref()
                     .ok_or(anyhow!("No dark font name"))?
             ))
         }
-        for cmd in v {
-            connection.run_command(format!("exec {}", &cmd)).await?;
-        }
+        sway_exec(v)?;
         Ok(())
     }
-    pub async fn light_mode(&self) -> Result<()> {
+    pub fn light_mode(&self) -> Result<()> {
         let mut v: Vec<String> = Vec::with_capacity(4);
-        let mut connection = Connection::new().await?;
         if self.has_gtk_theme() {
             v.push(format!(
-                "\t{} gtk-theme {}",
+                "{} gtk-theme {}",
                 GSETTINGS,
                 self.light_gtk_theme
                     .as_deref()
@@ -75,7 +71,7 @@ impl GSettings {
         }
         if self.has_icon_theme() {
             v.push(format!(
-                "\t{} icon-theme {}",
+                "{} icon-theme {}",
                 GSETTINGS,
                 self.light_icon_theme
                     .as_deref()
@@ -84,7 +80,7 @@ impl GSettings {
         }
         if self.has_cursor_theme() {
             v.push(format!(
-                "\t{} cursor-theme {}",
+                "{} cursor-theme {}",
                 GSETTINGS,
                 self.light_cursor_theme
                     .as_deref()
@@ -93,16 +89,14 @@ impl GSettings {
         }
         if self.has_font_name() {
             v.push(format!(
-                "\t{} font-name {}",
+                "{} font-name {}",
                 GSETTINGS,
                 self.light_font_name
                     .as_deref()
                     .ok_or(anyhow!("No light font name"))?
             ))
         }
-        for cmd in v {
-            connection.run_command(format!("exec {}", &cmd)).await?;
-        }
+        sway_exec(v)?;
         Ok(())
     }
 
@@ -128,4 +122,13 @@ impl GSettings {
             || self.has_cursor_theme()
             || self.has_font_name()
     }
+}
+
+fn sway_exec(v: Vec<String>) -> Result<()> {
+    let mut connection = Connection::new()?;
+    for cmd in v {
+        connection.run_command(&cmd)?;
+        println!("swaymsg {}", &cmd)
+    }
+    Ok(())
 }

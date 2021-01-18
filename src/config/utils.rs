@@ -4,16 +4,15 @@ use std::{
     io::{BufRead, BufReader, Write},
 };
 
-pub fn theme_file(path: PathBuf, line_starts_with: &str, insert_string: String) {
+use anyhow::Result;
+
+pub fn theme_file(path: PathBuf, line_starts_with: &str, insert_string: String) -> Result<()> {
     let mut conf = OpenOptions::new()
         .read(true)
         .open(
-            path.to_str()
-                .expect("Failed: to convert path to str (VSCode)"),
-        )
-        .expect("file error");
+            path.to_str().expect("Failed: to convert path to str (Alacritty)"),
+        )?;
     let reader = BufReader::new(&mut conf);
-
     let mut lines: Vec<String> = reader
         .lines()
         .map(|l| l.expect("Couldn't read a line"))
@@ -28,7 +27,8 @@ pub fn theme_file(path: PathBuf, line_starts_with: &str, insert_string: String) 
     }
 
     let data = lines.join("\n");
-    let mut f = File::create(path).expect("Unable to create file");
-    f.write_all(data.as_bytes()).expect("Unable to write data");
-    f.flush().expect("Error: Flushing  VSCodes settings.json");
+    let mut f = File::create(path)?;
+    f.write_all(data.as_bytes())?;
+    f.flush()?;
+    Ok(())
 }

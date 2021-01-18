@@ -1,10 +1,11 @@
+mod config;
+
 use anyhow::Result;
 use async_recursion::async_recursion;
 use async_std::task;
 use chrono::{prelude::*, NaiveTime, Utc};
 use std::time::Duration;
-
-use wayland_settings_core::*;
+use config::Config;
 
 const DAY: i64 = 24 * 3600;
 
@@ -12,13 +13,13 @@ const DAY: i64 = 24 * 3600;
 async fn auto_change_rigid(conf: Config, dawn: NaiveTime, dusk: NaiveTime) -> Result<()> {
     let now: NaiveTime = Utc::now().time();
     if  now < dawn {
-        conf.set_dark_mode().await?;
+        conf.set_dark_mode()?;
         task::sleep((dawn - now).to_std()?).await;
     } else if now > dusk {
-        conf.set_dark_mode().await?;
+        conf.set_dark_mode()?;
         task::sleep(Duration::from_secs(((dawn - now).num_seconds() + DAY) as u64)).await;
     } else {
-        conf.set_light_mode().await?;
+        conf.set_light_mode()?;
         task::sleep((dusk - now).to_std()?).await;
     }
     auto_change_rigid(conf, dawn, dusk).await?;
@@ -28,23 +29,26 @@ async fn auto_change_rigid(conf: Config, dawn: NaiveTime, dusk: NaiveTime) -> Re
 #[async_recursion]
 async fn auto_change_solar(conf: Config, lattitude: f64, longitude: f64) -> Result<()> {
     let utc: DateTime<Utc> = Utc::now();
-    // Calculate times for January 1, 2016 in Toronto
     let (sunrise, sunset) = sunrise::sunrise_sunset(lattitude, longitude, utc.year(), utc.month(), utc.day());
+    println!("Sunrise: {}", NaiveDateTime::from_timestamp(sunrise, 0).time().format("%H:%M"));
+    println!("Sunset: {}", NaiveDateTime::from_timestamp(sunset, 0).time().format("%H:%M"));
+    println!("Now: {}", utc.time().format("%H:%M"));
 
     let now = utc.timestamp();
     if now < sunrise {
-        conf.set_dark_mode().await?;
+        println!("{}", sunrise-now);
+        conf.set_dark_mode()?;
         task::sleep(Duration::from_secs((sunrise-now) as u64)).await;
     } else if now > sunset {
         let tomorrow_morning = sunrise::sunrise_sunset(lattitude, longitude, utc.year(), utc.month(), utc.day() + 1).0;
-        
-        conf.set_dark_mode().await?;
+        println!("Tomorrow Morning: {}", NaiveDateTime::from_timestamp(tomorrow_morning, 0).time().format("%H:%M"));
+        conf.set_dark_mode()?;
         task::sleep(Duration::from_secs(
             (tomorrow_morning-now) as u64
         ))
         .await;
     } else {
-        conf.set_light_mode().await?;
+        conf.set_light_mode()?;
         task::sleep(Duration::from_secs(
             (sunset - now) as u64
         )).await;

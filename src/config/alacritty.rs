@@ -24,7 +24,7 @@ impl Alacritty {
         Ok(())
     }
     pub fn change_theme(theme: &str) -> Result<()> {
-        let setting = dirs_next::home_dir().expect("Error: unable to find home directory").join(".config/alacritty/alacritty.json");
+        let setting = dirs_next::home_dir().expect("Error: unable to find home directory").join(".config/alacritty/alacritty.yml");
         let theme_insert = format!(
             "{}: *{}",
             ALACRITTY_SETTINGS_STARTS_WITH,
@@ -34,7 +34,7 @@ impl Alacritty {
             setting,
             ALACRITTY_SETTINGS_STARTS_WITH,
             theme_insert,
-        );
+        )?;
         Ok(())
     }
     pub fn is_some(&self) -> bool {

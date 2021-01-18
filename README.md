@@ -1,6 +1,6 @@
-# Wayland Color Daemon
+# Sway Color Daemon
 
-This is a WIP daemon for wayland (currently tested on sway) to automatically change light and dark themes based on the time of day, and strived to eventually become a settings daemon.
+This is a WIP daemon for sway to automatically change light and dark themes based on the time of day.
 
 ## What is currently supported?
 
@@ -28,11 +28,10 @@ Currently the following applications will switch between light and dark colorsch
 - [ ] Spotify
 - [ ] Set environment variable that can be used in scripts
 
-### Settings
+### UI
 
-- [ ] Locale
-- [ ] Sound
-
+- [ ] tui
+- [ ] gui
 
 ## How to get waybar theme to change automatically?
 
@@ -43,6 +42,7 @@ Waybar will change automatically with the gtk theme if you [make waybar follow t
 Create file `~/.config/sway-colord/config.ron`
 
 ```ron
+(
     timechange: Solar(52.4045, 0.5613),
     alacritty: Alacritty(
         dark_theme: Some("dark"),

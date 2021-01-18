@@ -28,15 +28,14 @@ use self::lighting::{Keyboard, Monitor};
 pub use self::vscode::VSCode;
 
 const GLOBAL_CONF: &str = "/etc/sway-colord/config.ron";
-const APP: &str = "wayland-settings-daemon";
-const APP_FILENAME: &str = "data.ron";
+const APP: &str = "sway-colord";
+const APP_FILENAME: &str = "config.ron";
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub enum TimeChange {
     Rigid(String, String),
     Solar(f64, f64),
 }
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
     pub timechange: TimeChange,
@@ -84,14 +83,13 @@ impl Config {
     }
     pub fn get_data() -> PathBuf {
         let mut dir = dirs_next::home_dir().expect("Error: unable to find home directory");
-        dir.push(".local");
-        dir.push("share");
+        dir.push(".config");
         dir.push(APP);
         if !dir.exists() {
             match fs::create_dir_all(&dir) {
                 Ok(_) => {}
                 Err(_) => {
-                    eprintln!("Error: Unable to create directory ~/.local/share/wayland-settings-daemon");
+                    eprintln!("Error: Unable to create directory ~/.config/sway-colord");
                     process::exit(1);
                 }
             }
@@ -101,7 +99,7 @@ impl Config {
             match OpenOptions::new().create(true).write(true).open(&dir) {
                 Ok(_) => {}
                 Err(_) => {
-                    eprintln!("Error: Unable to write to file ~/.local/share/wayland-settings-daemon/data.ron");
+                    eprintln!("Error: Unable to write to file ~/.config/sway-colord/config.ron");
                     process::exit(1)
                 }
             }
@@ -116,7 +114,7 @@ impl Config {
             match fs::create_dir_all(&dir) {
                 Ok(_) => {}
                 Err(_) => {
-                    eprintln!("Error: Unable to create directory ~/.cache/wayland-settings-daemon",);
+                    eprintln!("Error: Unable to create directory ~/.cache/sway-colord",);
                     process::exit(1)
                 }
             }
@@ -143,7 +141,7 @@ impl Config {
         }
     }
     pub fn save(&self) {
-        let mut file = File::create(Config::get_data()).expect("Failed to create data.ron");
+        let mut file = File::create(Config::get_data()).expect("Failed to create config.ron");
         let pretty = PrettyConfig::new()
             .with_depth_limit(2)
             .with_separate_tuple_members(true)
@@ -159,22 +157,26 @@ impl Config {
             }
         }
     }
-    pub async fn set_light_mode(&self) -> Result<()> {
+    pub fn set_light_mode(&self) -> Result<()> {
         if self.alacritty.is_some() {
             self.alacritty.light_mode()?;
         }
-        self.gsettings.light_mode().await?;
+        if self.gsettings.is_some() {
+            self.gsettings.light_mode()?;
+        }
         if self.vscode.is_some() {
             self.vscode.light_mode()?;
         }
-        self.lighting.dark_mode()?;
+        self.lighting.light_mode()?;
         Ok(())
     }
-    pub async fn set_dark_mode(&self) -> Result<()> {
+    pub fn set_dark_mode(&self) -> Result<()> {
         if self.alacritty.is_some() {
             self.alacritty.dark_mode()?;
         }
-        self.gsettings.dark_mode().await?;
+        if self.gsettings.is_some() {
+            self.gsettings.dark_mode()?;
+        }
         if self.vscode.is_some() {
             self.vscode.dark_mode()?;
         }
