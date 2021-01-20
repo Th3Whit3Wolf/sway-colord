@@ -26,16 +26,12 @@ Currently the following applications will switch between light and dark colorsch
 
 - [ ] Atom
 - [ ] Spotify
-- [ ] Set environment variable that can be used in scripts
+- [x] Set environment variable that can be used in scripts
 
 ### UI
 
 - [ ] tui
 - [ ] gui
-
-## How to get waybar theme to change automatically?
-
-Waybar will change automatically with the gtk theme if you [make waybar follow the gtk theme](https://github.com/Alexays/Waybar/wiki/Styling#making-waybar-follow-the-gtk-theme).
 
 ## Instructions
 
@@ -80,3 +76,30 @@ Create file `~/.config/sway-colord/config.ron`
     )
 )
 ```
+
+
+## How to get waybar theme to change automatically?
+
+Waybar will change automatically with the gtk theme if you [make waybar follow the gtk theme](https://github.com/Alexays/Waybar/wiki/Styling#making-waybar-follow-the-gtk-theme).
+
+## How to get my other utilities to switch themes with sway-colord?
+
+You can make an executable script for any utility that accepts a theme or config as a paramete. Place it in `~/.local/bin` and make sure `~/.local/bin` is in your `$PATH`. Here is an example for wofi.
+
+```shell
+#!/usr/bin/env bash
+
+# place this in ~/.local/bin/wofi
+dawn=$(cat /tmp/sway-colord/dawn)
+dusk=$(cat /tmp/sway-colord/dusk)
+now=$(date +%H:%M)
+
+if [[ "$now" < "$dawn" ]] || [[ "$now" > "$dusk" ]];; then
+    # Dark Theme
+    /usr/bin/wofi -s ~/.config/wofi/dark.css
+else
+    # Light Theme
+    /usr/bin/wofi -s ~/.config/wofi/light.css
+fi
+```
+
