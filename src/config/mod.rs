@@ -106,6 +106,20 @@ impl Config {
         }
         dir.join(APP_FILENAME)
     }
+    pub fn get_tmp() -> PathBuf {
+        let mut dir = Path::new("/tmp").to_owned();
+        dir.push(APP);
+        if !dir.exists() {
+            match fs::create_dir_all(&dir) {
+                Ok(_) => {}
+                Err(_) => {
+                    eprintln!("Error: Unable to create directory ~/.config/sway-colord");
+                    process::exit(1);
+                }
+            }
+        }
+        dir
+    }
     pub fn get_cache_dir() -> PathBuf {
         let mut dir = dirs_next::home_dir().expect("Error: unable to find home directory");
         dir.push(".cache");
