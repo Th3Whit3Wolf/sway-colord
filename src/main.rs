@@ -109,9 +109,9 @@ async fn main() -> Result<()> {
 fn write_tmp(dawn: String, dusk: String) -> Result<()> {
     let dir = Config::get_tmp();
     let dawn_file = &dir.join("dawn");
-    let mut dawn_file = File::open(dawn_file)?;
+    let mut dawn_file = File::create(dawn_file)?;
     let dusk_file = &dir.join("dusk");
-    let mut dusk_file = File::open(dusk_file)?;
+    let mut dusk_file = File::create(dusk_file)?;
     dawn_file.write_all(dawn.as_bytes())?;
     dusk_file.write_all(dusk.as_bytes())?;
     Ok(())
