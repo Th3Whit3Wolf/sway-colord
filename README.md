@@ -94,7 +94,7 @@ dawn=$(cat /tmp/sway-colord/dawn)
 dusk=$(cat /tmp/sway-colord/dusk)
 now=$(date +%H:%M)
 
-if [[ "$now" < "$dawn" ]] || [[ "$now" > "$dusk" ]];; then
+if [[ "$now" < "$dawn" ]] || [[ "$now" > "$dusk" ]]; then
     # Dark Theme
     /usr/bin/wofi -s ~/.config/wofi/dark.css
 else
