@@ -128,7 +128,7 @@ fn sway_exec(v: Vec<String>) -> Result<()> {
     let mut connection = Connection::new()?;
     for cmd in v {
         connection.run_command(&cmd)?;
-        println!("swaymsg {}", &cmd)
+        dbg!("swaymsg {}", &cmd);
     }
     Ok(())
 }
