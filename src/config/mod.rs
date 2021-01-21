@@ -136,7 +136,7 @@ impl Config {
                 }
             }
         }
-        dir.join(APP_FILENAME)
+        dir
     }
     pub fn get_tmp() -> PathBuf {
         let mut dir = Path::new("/tmp").to_owned();
@@ -151,6 +151,21 @@ impl Config {
             }
         }
         dir
+    }
+    #[allow(dead_code)]
+    pub fn lint_config() {
+        let path = Config::get_data();
+        let f = File::open(&path).expect("Failed opening file");
+        let config: Config = match from_reader(f) {
+            Ok(x) => x,
+            Err(e) => {
+                println!("Failed to load config: {}", e);
+
+                std::process::exit(1);
+            }
+        };
+
+        println!("Config: {:?}", &config);
     }
     #[allow(dead_code)]
     pub fn get_cache_dir() -> PathBuf {
