@@ -99,7 +99,7 @@ Waybar will change automatically with the gtk theme if you [make waybar follow t
 
 ## How to get my other utilities to switch themes with sway-colord?
 
-You can make an executable script for any utility that accepts a theme or config as a paramete. Place it in `~/.local/bin` and make sure `~/.local/bin` is in your `$PATH`. Here is an example for wofi.
+You can make an executable script for any utility that accepts a theme or config as a parameter. Place it in `~/.local/bin` and make sure `~/.local/bin` is in your `$PATH`. Here is an example for wofi.
 
 ```shell
 #!/usr/bin/env bash
@@ -107,7 +107,7 @@ You can make an executable script for any utility that accepts a theme or config
 # place this in ~/.local/bin/wofi
 dawn=$(cat /tmp/sway-colord/dawn)
 dusk=$(cat /tmp/sway-colord/dusk)
-now=$(date +%H:%M)
+now=$(date +%H:%M:%S)
 
 if [[ "$now" < "$dawn" ]] || [[ "$now" > "$dusk" ]]; then
     # Dark Theme
