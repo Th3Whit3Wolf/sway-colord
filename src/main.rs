@@ -13,8 +13,8 @@ const DAY: i64 = 24 * 3600;
 async fn auto_change_rigid(conf: Config, dawn: NaiveTime, dusk: NaiveTime) -> Result<()> {
     let now: NaiveTime = Utc::now().time();
     write_tmp(
-        format!("{}\n",dawn.format("%H:%M")),
-        format!("{}\n",dusk.format("%H:%M")),
+        format!("{}\n",dawn.format("%H:%M:%S")),
+        format!("{}\n",dusk.format("%H:%M:%S")),
     )?;
     if now < dawn {
         conf.set_dark_mode()?;
@@ -44,10 +44,10 @@ async fn auto_change_solar(conf: Config, lattitude: f64, longitude: f64) -> Resu
     write_tmp(
         format!("{}\n", sunrise
             .time()
-            .format("%H:%M")),
+            .format("%H:%M:%S")),
         format!("{}\n", sunset
             .time()
-            .format("%H:%M"))
+            .format("%H:%M:%S")),
     )?;
     if now < sunrise {
         dbg!("{}", sunrise - now);
