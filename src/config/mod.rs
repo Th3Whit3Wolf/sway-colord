@@ -120,6 +120,7 @@ impl Config {
         }
         dir
     }
+    #[allow(dead_code)]
     pub fn get_cache_dir() -> PathBuf {
         let mut dir = dirs_next::home_dir().expect("Error: unable to find home directory");
         dir.push(".cache");
@@ -154,6 +155,7 @@ impl Config {
             return Config::default();
         }
     }
+    #[allow(dead_code)]
     pub fn save(&self) {
         let mut file = File::create(Config::get_data()).expect("Failed to create config.ron");
         let pretty = PrettyConfig::new()
