@@ -38,48 +38,31 @@ async fn auto_change_solar(conf: Config, lattitude: f64, longitude: f64) -> Resu
     let utc: DateTime<Utc> = Utc::now();
     let (sunrise, sunset) =
         sunrise::sunrise_sunset(lattitude, longitude, utc.year(), utc.month(), utc.day());
-    /*
-    println!(
-        "Sunrise: {}",
-        NaiveDateTime::from_timestamp(sunrise, 0)
-            .time()
-            .format("%H:%M")
-    );
-    println!(
-        "Sunset: {}",
-        NaiveDateTime::from_timestamp(sunset, 0)
-            .time()
-            .format("%H:%M")
-    );
-    println!("Now: {}", utc.time().format("%H:%M"));
-    */
+    let sunrise = NaiveDateTime::from_timestamp(sunrise, 0);
+    let sunset = NaiveDateTime::from_timestamp(sunset, 0);
+    let now = utc.naive_local();
     write_tmp(
-        format!("{}\n",NaiveDateTime::from_timestamp(sunrise, 0)
+        format!("{}\n", sunrise
             .time()
             .format("%H:%M")),
-        format!("{}\n", NaiveDateTime::from_timestamp(sunset, 0)
+        format!("{}\n", sunset
             .time()
             .format("%H:%M"))
     )?;
-    let now = utc.timestamp();
     if now < sunrise {
-        println!("{}", sunrise - now);
+        dbg!("{}", sunrise - now);
         conf.set_dark_mode()?;
-        task::sleep(Duration::from_secs((sunrise - now) as u64)).await;
+        task::sleep((sunrise - now).to_std()?).await;
     } else if now > sunset {
         let tomorrow_morning =
-            sunrise::sunrise_sunset(lattitude, longitude, utc.year(), utc.month(), utc.day() + 1).0;
-        println!(
-            "Tomorrow Morning: {}",
-            NaiveDateTime::from_timestamp(tomorrow_morning, 0)
-                .time()
-                .format("%H:%M")
-        );
+            NaiveDateTime::from_timestamp(sunrise::sunrise_sunset(lattitude, longitude, utc.year(), utc.month(), utc.day() + 1).0, 0);
+        dbg!("{}", tomorrow_morning - now);
         conf.set_dark_mode()?;
-        task::sleep(Duration::from_secs((tomorrow_morning - now) as u64)).await;
+        task::sleep((tomorrow_morning - now).to_std()?).await;
     } else {
+        dbg!("{}", sunset - now);
         conf.set_light_mode()?;
-        task::sleep(Duration::from_secs((sunset - now) as u64)).await;
+        task::sleep((sunset - now).to_std()?).await;
     }
 
     auto_change_solar(conf, lattitude, longitude).await?;
@@ -110,6 +93,8 @@ fn write_tmp(dawn: String, dusk: String) -> Result<()> {
     let mut dawn_file = File::create(dawn_file)?;
     let dusk_file = &dir.join("dusk");
     let mut dusk_file = File::create(dusk_file)?;
+    dbg!(format!("Dawn: {}",&dawn));
+    dbg!(format!("Dawn: {}",&dusk));
     dawn_file.write_all(dawn.as_bytes())?;
     dusk_file.write_all(dusk.as_bytes())?;
     Ok(())
