@@ -9,6 +9,7 @@ You change choose between settings a rigid timer (change occurs at 7Am & 7PM) or
 Currently the following applications will switch between light and dark colorschemes automatically:
 
 * Alacritty
+* Bat
 * Vscode
 * GTK (on sway)
   * GTK Theme
@@ -19,6 +20,8 @@ Currently the following applications will switch between light and dark colorsch
   * Monitor
   * Keyboard
 
+Sway Color Daemon also creates `/tmp/sway-colord/dawn` & `/tmp/sway-colord/dusk` files
+that can be read to find out when the next timechange is from a shell script
 
 ## Goals
 
@@ -26,7 +29,6 @@ Currently the following applications will switch between light and dark colorsch
 
 - [ ] Atom
 - [ ] Spotify
-- [x] Set environment variable that can be used in scripts
 
 ### UI
 
@@ -40,43 +42,56 @@ Create file `~/.config/sway-colord/config.ron`
 ```ron
 (
     timechange: Solar(52.4045, 0.5613),
-    alacritty: Alacritty(
-        dark_theme: Some("dark"),
-        light_theme: Some("light")
+    alacritty: Some
+	Alacritty(
+	    dark_theme: Some("dark"),
+	    light_theme: Some("light")
+	)
     ),
-    gsettings: GSettings(
-        dark_gtk_theme: Some("Space-Dark"),
-        dark_icon_theme: Some("Space-Dark"),
-        dark_cursor_theme: None,
-        dark_font_name: None,
-        light_gtk_theme: Some("Space-Light"),
-        light_icon_theme: Some("Space-Light"),
-        light_cursor_theme: None,
-        light_font_name: None,
+    bat: Some(
+	Bat(
+	    dark_theme: Some("OneHalfDark"),
+	    light_theme: Some("OneHalfLight")
+	)
     ),
-    lighting: Lighting(
-        monitor: Some(
-            Monitor(
-                device: "amdgpu_bl0",
-                light_perc: 50,
-                dark_perc: 20
-            )
-        ),
-        keyboard: Some(
-            Keyboard(
-                device: "asus::kbd_backlight",
-                light_perc: 0,
-                dark_perc: 34
-            )
-        )
+    gsettings: Some(
+	GSettings(
+	    dark_gtk_theme: Some("Space-Dark"),
+	    dark_icon_theme: Some("Space-Dark"),
+	    dark_cursor_theme: None,
+	    dark_font_name: None,
+	    light_gtk_theme: Some("Space-Light"),
+	    light_icon_theme: Some("Space-Light"),
+	    light_cursor_theme: None,
+	    light_font_name: None,
+	)
     ),
-    vscode: VSCode(
-        dark_theme: Some("Spacemacs - dark"),
-        light_theme: Some("Spacemacs - light")
+    lighting: Some(
+	Lighting(
+	    monitor: Some(
+		Monitor(
+		    device: "amdgpu_bl0",
+		    light_perc: 50,
+		    dark_perc: 20
+		)
+	    ),
+	    keyboard: Some(
+		Keyboard(
+		    device: "asus::kbd_backlight",
+		    light_perc: 0,
+		    dark_perc: 34
+		)
+	    )
+	)
+    ),
+    vscode: Some(
+	VSCode(
+	    dark_theme: Some("Spacemacs - dark"),
+	    light_theme: Some("Spacemacs - light")
+	)
     )
 )
 ```
-
 
 ## How to get waybar theme to change automatically?
 
