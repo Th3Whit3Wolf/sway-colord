@@ -115,6 +115,9 @@ impl Lighting {
         }
         Ok(())
     }
+    pub fn is_some(&self) -> bool {
+        self.monitor.is_some() || self.keyboard.is_some()
+    }
 }
 fn get_mon_max_brightness(device: &str) -> Result<u64> {
     if let Ok(file) = fs::read_to_string(format!("/sys/class/backlight/{}/max_brightness", device)) {
