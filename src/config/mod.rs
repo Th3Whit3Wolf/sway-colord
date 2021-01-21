@@ -1,5 +1,4 @@
 use anyhow::Result;
-use lighting::Lighting;
 use ron::{
     de::from_reader,
     ser::{to_string_pretty, PrettyConfig},
@@ -14,6 +13,7 @@ use std::{
 };
 
 mod alacritty;
+mod bat;
 mod gsettings;
 mod lighting;
 mod utils;
@@ -23,8 +23,9 @@ mod vscode;
 mod tests;
 
 pub use self::alacritty::Alacritty;
+pub use self::bat::Bat;
 pub use self::gsettings::GSettings;
-use self::lighting::{Keyboard, Monitor};
+pub use self::lighting::Lighting;
 pub use self::vscode::VSCode;
 
 const GLOBAL_CONF: &str = "/etc/sway-colord/config.ron";
@@ -39,46 +40,77 @@ pub enum TimeChange {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
     pub timechange: TimeChange,
-    pub alacritty: Alacritty,
-    pub gsettings: GSettings,
-    pub lighting: Lighting,
-    pub vscode: VSCode,
+    pub alacritty: Option<Alacritty>,
+    pub bat: Option<Bat>,
+    pub gsettings: Option<GSettings>,
+    pub lighting: Option<Lighting>,
+    pub vscode: Option<VSCode>,
 }
 
 impl Config {
     pub fn default() -> Config {
         Config {
-            timechange: TimeChange::Solar(52.4045, 0.5613),
-            alacritty: Alacritty {
-                light_theme: Some(String::from("light")),
-                dark_theme: Some(String::from("dark")),
-            },
-            gsettings: GSettings {
-                dark_gtk_theme: Some(String::from("Space-Dark")),
-                dark_icon_theme: Some(String::from("Space-Dark")),
-                dark_cursor_theme: None,
-                dark_font_name: None,
-                light_gtk_theme: Some(String::from("Space-Light")),
-                light_icon_theme: Some(String::from("Space-Light")),
-                light_cursor_theme: None,
-                light_font_name: None,
-            },
-            lighting: Lighting {
-                monitor: Some(Monitor {
-                    device: String::from("amdgpu_bl0"),
-                    light_perc: 50,
-                    dark_perc: 20,
-                }),
-                keyboard: Some(Keyboard {
-                    device: String::from("asus::kbd_backlight"),
-                    light_perc: 0,
-                    dark_perc: 34,
-                }),
-            },
-            vscode: VSCode {
-                light_theme: Some(String::from("Spacemacs - light")),
-                dark_theme: Some(String::from("Spacemacs - dark")),
-            },
+            timechange: TimeChange::Rigid(String::from("07:00:00"), String::from("19:00:00")),
+            alacritty: None,
+            bat: None,
+            gsettings: None,
+            lighting: None,
+            vscode: None,
+        }
+    }
+    pub fn is_alacritty(&self) -> Option<Alacritty> {
+        if let Some(conf) = &self.alacritty {
+            if conf.is_some() {
+                Some(conf.to_owned())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+    pub fn is_bat(&self) -> Option<Bat> {
+        if let Some(conf) = &self.bat {
+            if conf.is_some() {
+                Some(conf.to_owned())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+    pub fn is_gsettings(&self) -> Option<GSettings> {
+        if let Some(conf) = &self.gsettings {
+            if conf.is_some() {
+                Some(conf.to_owned())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+    pub fn is_lighting(&self) -> Option<Lighting> {
+        if let Some(conf) = &self.lighting {
+            if conf.is_some() {
+                Some(conf.to_owned())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+    pub fn is_vscode(&self) -> Option<VSCode> {
+        if let Some(conf) = &self.vscode {
+            if conf.is_some() {
+                Some(conf.to_owned())
+            } else {
+                None
+            }
+        } else {
+            None
         }
     }
     pub fn get_data() -> PathBuf {
@@ -174,29 +206,41 @@ impl Config {
         }
     }
     pub fn set_light_mode(&self) -> Result<()> {
-        if self.alacritty.is_some() {
-            self.alacritty.light_mode()?;
+        if let Some(alacritty) = self.is_alacritty() {
+            alacritty.light_mode()?;
         }
-        if self.gsettings.is_some() {
-            self.gsettings.light_mode()?;
+        if let Some(bat) = self.is_bat() {
+            bat.light_mode()?;
         }
-        if self.vscode.is_some() {
-            self.vscode.light_mode()?;
+        if let Some(gsettings) = self.is_gsettings() {
+            gsettings.light_mode()?;
         }
-        self.lighting.light_mode()?;
+        if let Some(vscode) = self.is_vscode() {
+            vscode.light_mode()?;
+        }
+        if let Some(lighting) = self.is_lighting() {
+            lighting.light_mode()?;
+        }
+
         Ok(())
     }
     pub fn set_dark_mode(&self) -> Result<()> {
-        if self.alacritty.is_some() {
-            self.alacritty.dark_mode()?;
+        if let Some(alacritty) = self.is_alacritty() {
+            alacritty.dark_mode()?;
         }
-        if self.gsettings.is_some() {
-            self.gsettings.dark_mode()?;
+        if let Some(bat) = self.is_bat() {
+            bat.dark_mode()?;
         }
-        if self.vscode.is_some() {
-            self.vscode.dark_mode()?;
+        if let Some(gsettings) = self.is_gsettings() {
+            gsettings.dark_mode()?;
         }
-        self.lighting.dark_mode()?;
+        if let Some(vscode) = self.is_vscode() {
+            vscode.dark_mode()?;
+        }
+        if let Some(lighting) = self.is_lighting() {
+            lighting.dark_mode()?;
+        }
+
         Ok(())
     }
 }
