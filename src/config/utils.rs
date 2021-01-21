@@ -18,12 +18,18 @@ pub fn theme_file(path: PathBuf, line_starts_with: &str, insert_string: String) 
         .map(|l| l.expect("Couldn't read a line"))
         .collect();
 
+    let mut found = Box::new(false);
     for i in 0..lines.len() {
         if lines[i].starts_with(line_starts_with) {
             if let Some(elem) = lines.get_mut(i) {
                 *elem = insert_string.clone();
+                *found = true;
             }
         }
+    }
+
+    if *found == false {
+        lines.push(insert_string)
     }
 
     let data = lines.join("\n");
