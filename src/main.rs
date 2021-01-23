@@ -71,8 +71,7 @@ async fn auto_change_solar(conf: Config, lattitude: f64, longitude: f64) -> Resu
 
 #[async_std::main]
 async fn main() -> Result<()> {
-    //Config::lint_config();
-    let conf = Config::load();
+    let conf = Config::load()?;
     match conf.timechange.clone() {
         config::TimeChange::Rigid(morning, night) => {
             let dawn = NaiveTime::parse_from_str(&morning, "%H:%M:%S")
