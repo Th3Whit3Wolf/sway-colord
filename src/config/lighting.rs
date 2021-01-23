@@ -7,15 +7,15 @@ use zbus::Connection;
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Monitor {
     pub device: String,
-    pub light_perc: u64,
     pub dark_perc: u64,
+    pub light_perc: u64,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Keyboard {
     pub device: String,
-    pub light_perc: u64,
     pub dark_perc: u64,
+    pub light_perc: u64,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
