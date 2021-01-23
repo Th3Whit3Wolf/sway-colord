@@ -31,7 +31,6 @@ that can be read to find out when the next timechange is from a shell script
 ### Theme Switching
 
 - [ ] Atom
-- [ ] Spotify
 - [ ] Kitty
 
 ### UI
