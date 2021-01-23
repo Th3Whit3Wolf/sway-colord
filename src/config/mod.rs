@@ -17,6 +17,7 @@ mod bat;
 mod gsettings;
 mod lighting;
 mod mako;
+mod spotify;
 mod utils;
 mod vscode;
 
@@ -28,6 +29,7 @@ pub use self::bat::Bat;
 pub use self::gsettings::GSettings;
 pub use self::lighting::Lighting;
 pub use self::mako::Mako;
+pub use self::spotify::Spotify;
 pub use self::vscode::VSCode;
 
 const GLOBAL_CONF: &str = "/etc/sway-colord/config.ron";
@@ -47,6 +49,7 @@ pub struct Config {
     pub gsettings: Option<GSettings>,
     pub lighting: Option<Lighting>,
     pub mako: Option<Mako>,
+    pub spotify: Option<Spotify>,
     pub vscode: Option<VSCode>,
 }
 
@@ -59,6 +62,7 @@ impl Config {
             gsettings: None,
             lighting: None,
             mako: None,
+            spotify: None,
             vscode: None,
         }
     }
@@ -111,7 +115,17 @@ impl Config {
             if conf.is_some() {
                 Some(conf.to_owned())
             } else {
-                //println!("No Mako");
+                None
+            }
+        } else {
+            None
+        }
+    }
+    pub fn is_spotify(&self) -> Option<Spotify> {
+        if let Some(conf) = &self.spotify {
+            if conf.is_some() {
+                Some(conf.to_owned())
+            } else {
                 None
             }
         } else {
@@ -169,21 +183,6 @@ impl Config {
         dir
     }
     #[allow(dead_code)]
-    pub fn lint_config() {
-        let path = Config::get_data();
-        let f = File::open(&path).expect("Failed opening file");
-        let config: Config = match from_reader(f) {
-            Ok(x) => x,
-            Err(e) => {
-                println!("Failed to load config: {}", e);
-
-                std::process::exit(1);
-            }
-        };
-
-        println!("Config: {:?}", &config);
-    }
-    #[allow(dead_code)]
     pub fn get_cache_dir() -> PathBuf {
         let mut dir = dirs_next::home_dir().expect("Error: unable to find home directory");
         dir.push(".cache");
@@ -199,24 +198,28 @@ impl Config {
         }
         dir
     }
-    pub fn load() -> Config {
+    pub fn load() -> Result<Config> {
         if let Ok(file) = File::open(Config::get_data()) {
             match from_reader(file) {
-                Ok(data) => return data,
-                Err(_) => {
-                    if let Ok(global) = File::open(Path::new(GLOBAL_CONF)) {
-                        match from_reader(global) {
-                            Ok(data) => return data,
-                            Err(_) => return Config::default(),
-                        }
-                    } else {
-                        return Config::default();
-                    }
+                Ok(data) => data,
+                Err(e) => {
+                    println!("Failed to load config: {}", e);
+
+                    std::process::exit(1);
                 }
             }
-        } else {
-            return Config::default();
         }
+        if let Ok(global) = File::open(Path::new(GLOBAL_CONF)) {
+            match from_reader(global) {
+                Ok(data) => data,
+                Err(e) => {
+                    println!("Failed to load config: {}", e);
+
+                    std::process::exit(1);
+                }
+            }
+        }
+        return Ok(Config::default());
     }
     #[allow(dead_code)]
     pub fn save(&self) {
@@ -252,6 +255,9 @@ impl Config {
         if let Some(mako) = self.is_mako() {
             mako.light_mode()?;
         }
+        if let Some(spotify) = self.is_spotify() {
+            spotify.light_mode()?;
+        }
         if let Some(vscode) = self.is_vscode() {
             vscode.light_mode()?;
         }
@@ -273,6 +279,9 @@ impl Config {
         }
         if let Some(mako) = self.is_mako() {
             mako.dark_mode()?;
+        }
+        if let Some(spotify) = self.is_spotify() {
+            spotify.dark_mode()?;
         }
         if let Some(vscode) = self.is_vscode() {
             vscode.dark_mode()?;
