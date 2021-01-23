@@ -2,7 +2,7 @@ use super::Config;
 use ron::de::from_str;
 
 const CONFIG: &str = "(
-    timechange: Solar(52.4045, 0.5613),
+    timechange: Solar(9.4045, 10.5613),
     alacritty: Some(
         Alacritty(
             dark_theme: Some(\"dark\"),
@@ -45,6 +45,18 @@ const CONFIG: &str = "(
             )
         )
     ),
+    mako: Some(
+        Mako(
+            dark_theme: Some(\"Space-Dark\"),
+            light_theme: Some(\"Space-Light\")
+        )
+    ),
+    spotify: Some(
+        Spotify(
+            dark_theme: Some(\"space-dark\"),
+            light_theme: Some(\"space-light\")
+        )
+    ),
     vscode: Some(
         VSCode(
             dark_theme: Some(\"Dark\"),
@@ -68,6 +80,12 @@ fn test_read_config() {
     }
     if !conf.lighting.is_some() {
         panic!("VSCode not detected")
+    }
+    if !conf.mako.is_some() {
+        panic!("Mako not detected")
+    }
+    if !conf.spotify.is_some() {
+        panic!("Spotify not detected")
     }
     if !conf.vscode.is_some() {
         panic!("VSCode not detected")
