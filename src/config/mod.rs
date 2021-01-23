@@ -16,6 +16,7 @@ mod alacritty;
 mod bat;
 mod gsettings;
 mod lighting;
+mod mako;
 mod utils;
 mod vscode;
 
@@ -26,6 +27,7 @@ pub use self::alacritty::Alacritty;
 pub use self::bat::Bat;
 pub use self::gsettings::GSettings;
 pub use self::lighting::Lighting;
+pub use self::mako::Mako;
 pub use self::vscode::VSCode;
 
 const GLOBAL_CONF: &str = "/etc/sway-colord/config.ron";
@@ -44,6 +46,7 @@ pub struct Config {
     pub bat: Option<Bat>,
     pub gsettings: Option<GSettings>,
     pub lighting: Option<Lighting>,
+    pub mako: Option<Mako>,
     pub vscode: Option<VSCode>,
 }
 
@@ -55,6 +58,7 @@ impl Config {
             bat: None,
             gsettings: None,
             lighting: None,
+            mako: None,
             vscode: None,
         }
     }
@@ -96,6 +100,18 @@ impl Config {
             if conf.is_some() {
                 Some(conf.to_owned())
             } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+    pub fn is_mako(&self) -> Option<Mako> {
+        if let Some(conf) = &self.mako {
+            if conf.is_some() {
+                Some(conf.to_owned())
+            } else {
+                //println!("No Mako");
                 None
             }
         } else {
@@ -230,11 +246,14 @@ impl Config {
         if let Some(gsettings) = self.is_gsettings() {
             gsettings.light_mode()?;
         }
-        if let Some(vscode) = self.is_vscode() {
-            vscode.light_mode()?;
-        }
         if let Some(lighting) = self.is_lighting() {
             lighting.light_mode()?;
+        }
+        if let Some(mako) = self.is_mako() {
+            mako.light_mode()?;
+        }
+        if let Some(vscode) = self.is_vscode() {
+            vscode.light_mode()?;
         }
 
         Ok(())
@@ -249,11 +268,14 @@ impl Config {
         if let Some(gsettings) = self.is_gsettings() {
             gsettings.dark_mode()?;
         }
-        if let Some(vscode) = self.is_vscode() {
-            vscode.dark_mode()?;
-        }
         if let Some(lighting) = self.is_lighting() {
             lighting.dark_mode()?;
+        }
+        if let Some(mako) = self.is_mako() {
+            mako.dark_mode()?;
+        }
+        if let Some(vscode) = self.is_vscode() {
+            vscode.dark_mode()?;
         }
 
         Ok(())
