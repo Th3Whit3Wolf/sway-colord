@@ -29,9 +29,7 @@ impl Mako {
         Ok(())
     }
     pub fn is_some(&self) -> bool {
-        let mut mako_dir = dirs_next::home_dir().expect("Error: unable to find home directory");
-        mako_dir.push(".config");
-        mako_dir.push("mako");
+        let mako_dir = dirs_next::home_dir().expect("Error: unable to find home directory").join(".config/mako");
         if let Some(light_path) = &self.light_theme {
             if mako_dir.join(light_path).is_file() {
                 if let Some(dark_path) = &self.dark_theme {
@@ -79,7 +77,6 @@ fn change_theme(theme: &str) -> Result<()> {
         .stdout(Stdio::from(outputs))
         .stderr(Stdio::from(errors))
         .spawn()?;
-    //.wait_with_output()?;
 
     println!("Mako theme changed");
 
