@@ -19,6 +19,7 @@ Currently the following applications will switch between light and dark colorsch
 * Lighting
   * Monitor
   * Keyboard
+* Mako
 * Neovim(v0.5+) with [Dusk-til-Dawn.nvim](https://github.com/Th3Whit3Wolf/Dusk-til-Dawn.nvim)
 
 Sway Color Daemon also creates `/tmp/sway-colord/dawn` & `/tmp/sway-colord/dusk` files
@@ -30,6 +31,7 @@ that can be read to find out when the next timechange is from a shell script
 
 - [ ] Atom
 - [ ] Spotify
+- [ ] Kitty
 
 ### UI
 
@@ -72,23 +74,29 @@ Create file `~/.config/sway-colord/config.ron`
 			monitor: Some(
 				Monitor(
 					device: "amdgpu_bl0",
-					light_perc: 50,
-					dark_perc: 20
+					dark_perc: 20,
+					light_perc: 50
 				)
-	    	),
+			),
 			keyboard: Some(
 				Keyboard(
 					device: "asus::kbd_backlight",
-					light_perc: 0,
-					dark_perc: 34
+					dark_perc: 34,
+					light_perc: 0
 				)
 			)
 		)
     ),
+    mako: Some(
+		Mako(
+	    	dark_theme: Some("Dark"),
+	    	light_theme: Some("Light")
+		)
+    ),
     vscode: Some(
 		VSCode(
-			dark_theme: Some("Spacemacs - dark"),
-			light_theme: Some("Spacemacs - light")
+	    	dark_theme: Some("Spacemacs - dark"),
+	    	light_theme: Some("Spacemacs - light")
 		)
     )
 )
