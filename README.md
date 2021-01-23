@@ -10,7 +10,6 @@ Currently the following applications will switch between light and dark colorsch
 
 * Alacritty
 * Bat
-* Vscode
 * GTK (on sway)
   * GTK Theme
   * Icon Theme
@@ -21,6 +20,8 @@ Currently the following applications will switch between light and dark colorsch
   * Keyboard
 * Mako
 * Neovim(v0.5+) with [Dusk-til-Dawn.nvim](https://github.com/Th3Whit3Wolf/Dusk-til-Dawn.nvim)
+* Spotify with [spicetify](https://github.com/khanhas/spicetify-cli)
+* Vscode
 
 Sway Color Daemon also creates `/tmp/sway-colord/dawn` & `/tmp/sway-colord/dusk` files
 that can be read to find out when the next timechange is from a shell script
