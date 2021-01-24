@@ -72,7 +72,7 @@ jobs:
         wget "https://github.com/Th3Whit3Wolf/sway-colord/archive/${VERSION}.tar.gz"
         shasum=$(sha256sum $VERSION.tar.gz | grep -o '^[0-9A-Za-z]*\b')
         sed -i "s/sha256sums=.*/sha256sums=('${shasum}')/g" dist/arch/PKGBUILD
-        cp dist/archlinux/PKGBUILD $GITHUB_WORKSPACE/PKGBUILD
+        cp dist/arch/PKGBUILD $GITHUB_WORKSPACE/PKGBUILD
     - name: Load Release URL File from release job
       uses: actions/download-artifact@v1
       with:
