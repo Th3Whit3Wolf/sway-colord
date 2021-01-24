@@ -68,10 +68,10 @@ jobs:
     - name: Release PKGBUILD
       run: |
         VERSION="${GITHUB_REF:10}"
-        sed -i 's/pkgver=.*$/pkgver='${VERSION:1}'/g' dist/archlinux/PKGBUILD
+        sed -i 's/pkgver=.*$/pkgver='${VERSION:1}'/g' dist/arch/PKGBUILD
         wget "https://github.com/Th3Whit3Wolf/sway-colord/archive/${VERSION}.tar.gz"
         shasum=$(sha256sum $VERSION.tar.gz | grep -o '^[0-9A-Za-z]*\b')
-        sed -i "s/sha256sums=.*/sha256sums=('${shasum}')/g" dist/archlinux/PKGBUILD
+        sed -i "s/sha256sums=.*/sha256sums=('${shasum}')/g" dist/arch/PKGBUILD
         cp dist/archlinux/PKGBUILD $GITHUB_WORKSPACE/PKGBUILD
     - name: Load Release URL File from release job
       uses: actions/download-artifact@v1
