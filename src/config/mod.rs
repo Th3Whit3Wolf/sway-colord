@@ -201,7 +201,7 @@ impl Config {
     pub fn load() -> Result<Config> {
         if let Ok(file) = File::open(Config::get_data()) {
             let _config: Config = match from_reader(file) {
-                Ok(data) => return Ok(data),
+                Ok(data) => data,
                 Err(e) => {
                     println!("Failed to load config: {}", e);
 
@@ -210,8 +210,8 @@ impl Config {
             };
         }
         if let Ok(global) = File::open(Path::new(GLOBAL_CONF)) {
-            let _config: Config =  match from_reader(global) {
-                Ok(data) => return Ok(data),
+            let _config: Config = match from_reader(global) {
+                Ok(data) => data,
                 Err(e) => {
                     println!("Failed to load config: {}", e);
 
@@ -219,7 +219,7 @@ impl Config {
                 }
             };
         }
-        return Ok(Config::default());
+        Ok(Config::default())
     }
     #[allow(dead_code)]
     pub fn save(&self) {

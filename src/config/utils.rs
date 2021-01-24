@@ -7,11 +7,10 @@ use std::{
 use anyhow::Result;
 
 pub fn theme_file(path: PathBuf, line_starts_with: &str, insert_string: String) -> Result<()> {
-    let mut conf = OpenOptions::new()
-        .read(true)
-        .open(
-            path.to_str().expect("Failed: to convert path to str (Alacritty)"),
-        )?;
+    let mut conf = OpenOptions::new().read(true).open(
+        path.to_str()
+            .expect("Failed: to convert path to str (Alacritty)"),
+    )?;
     let reader = BufReader::new(&mut conf);
     let mut lines: Vec<String> = reader
         .lines()
@@ -28,7 +27,7 @@ pub fn theme_file(path: PathBuf, line_starts_with: &str, insert_string: String) 
         }
     }
 
-    if *found == false {
+    if !(*found) {
         lines.push(insert_string)
     }
 

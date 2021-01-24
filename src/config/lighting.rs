@@ -41,7 +41,11 @@ impl Lighting {
                     "/org/freedesktop/login1/session/auto",
                     Some("org.freedesktop.login1.Session"),
                     "SetBrightness",
-                    &("backlight", dev, (dark_perc as f64 / 100.0 * max_b as f64).round() as u32),
+                    &(
+                        "backlight",
+                        dev,
+                        (dark_perc as f64 / 100.0 * max_b as f64).round() as u32,
+                    ),
                 ) {
                     Ok(_msg) => {}
                     Err(e) => println!("Failed to set brightness: {}", e),
@@ -61,7 +65,11 @@ impl Lighting {
                     "/org/freedesktop/login1/session/auto",
                     Some("org.freedesktop.login1.Session"),
                     "SetBrightness",
-                    &("leds", dev, (dark_perc as f64 / 100.0 * max_b as f64).round() as u32),
+                    &(
+                        "leds",
+                        dev,
+                        (dark_perc as f64 / 100.0 * max_b as f64).round() as u32,
+                    ),
                 ) {
                     Ok(_msg) => {}
                     Err(e) => println!("Failed to set brightness: {}", e),
@@ -86,7 +94,11 @@ impl Lighting {
                     "/org/freedesktop/login1/session/auto",
                     Some("org.freedesktop.login1.Session"),
                     "SetBrightness",
-                    &("backlight", dev, (light_perc as f64 / 100.0 * max_b as f64).round() as u32),
+                    &(
+                        "backlight",
+                        dev,
+                        (light_perc as f64 / 100.0 * max_b as f64).round() as u32,
+                    ),
                 ) {
                     Ok(_msg) => {}
                     Err(e) => println!("Failed to set brightness: {}", e),
@@ -106,7 +118,11 @@ impl Lighting {
                     "/org/freedesktop/login1/session/auto",
                     Some("org.freedesktop.login1.Session"),
                     "SetBrightness",
-                    &("leds", dev, (light_perc as f64 / 100.0 * max_b as f64).round() as u32),
+                    &(
+                        "leds",
+                        dev,
+                        (light_perc as f64 / 100.0 * max_b as f64).round() as u32,
+                    ),
                 ) {
                     Ok(_msg) => {}
                     Err(e) => println!("Failed to set brightness: {}", e),
@@ -120,7 +136,8 @@ impl Lighting {
     }
 }
 fn get_mon_max_brightness(device: &str) -> Result<u64> {
-    if let Ok(file) = fs::read_to_string(format!("/sys/class/backlight/{}/max_brightness", device)) {
+    if let Ok(file) = fs::read_to_string(format!("/sys/class/backlight/{}/max_brightness", device))
+    {
         if let Ok(num) = file.trim().parse::<u64>() {
             Ok(num)
         } else {

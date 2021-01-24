@@ -25,7 +25,7 @@ impl GSettings {
                 GSETTINGS,
                 self.dark_gtk_theme
                     .as_deref()
-                    .ok_or(anyhow!("No dark gtk theme"))?
+                    .ok_or_else(||{anyhow!("No dark gtk theme")})?
             ))
         }
         if self.has_icon_theme() {
@@ -34,7 +34,7 @@ impl GSettings {
                 GSETTINGS,
                 self.dark_icon_theme
                     .as_deref()
-                    .ok_or(anyhow!("No dark icon theme"))?
+                    .ok_or_else(||{anyhow!("No dark icon theme")})?
             ))
         }
         if self.has_cursor_theme() {
@@ -43,7 +43,7 @@ impl GSettings {
                 GSETTINGS,
                 self.dark_cursor_theme
                     .as_deref()
-                    .ok_or(anyhow!("No dark cursor theme"))?
+                    .ok_or_else(||{anyhow!("No dark cursor theme")})?
             ))
         }
         if self.has_font_name() {
@@ -52,7 +52,7 @@ impl GSettings {
                 GSETTINGS,
                 self.dark_font_name
                     .as_deref()
-                    .ok_or(anyhow!("No dark font name"))?
+                    .ok_or_else(||{anyhow!("No dark font name")})?
             ))
         }
         sway_exec(v)?;
@@ -66,7 +66,7 @@ impl GSettings {
                 GSETTINGS,
                 self.light_gtk_theme
                     .as_deref()
-                    .ok_or(anyhow!("No light gtk theme"))?
+                    .ok_or_else(||{anyhow!("No light gtk theme")})?
             ))
         }
         if self.has_icon_theme() {
@@ -75,7 +75,7 @@ impl GSettings {
                 GSETTINGS,
                 self.light_icon_theme
                     .as_deref()
-                    .ok_or(anyhow!("No light icon theme"))?
+                    .ok_or_else(||{anyhow!("No light icon theme")})?
             ))
         }
         if self.has_cursor_theme() {
@@ -84,7 +84,7 @@ impl GSettings {
                 GSETTINGS,
                 self.light_cursor_theme
                     .as_deref()
-                    .ok_or(anyhow!("No light cursor theme"))?
+                    .ok_or_else(||{anyhow!("No light cursor theme")})?
             ))
         }
         if self.has_font_name() {
@@ -93,7 +93,7 @@ impl GSettings {
                 GSETTINGS,
                 self.light_font_name
                     .as_deref()
-                    .ok_or(anyhow!("No light font name"))?
+                    .ok_or_else(||{anyhow!("No light font name")})?
             ))
         }
         sway_exec(v)?;

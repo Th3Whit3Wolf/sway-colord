@@ -24,20 +24,19 @@ impl Bat {
         Ok(())
     }
     pub fn change_theme(theme: &str) -> Result<()> {
-        let setting = dirs_next::home_dir().expect("Error: unable to find home directory").join(".config/bat/config");
-        let theme_insert = format!(
-            "{}{}",
-            BAT_SETTINGS_STARTS_WITH,
-            theme
-        );
-        theme_file(
-            setting,
-            BAT_SETTINGS_STARTS_WITH,
-            theme_insert,
-        )?;
+        let setting = dirs_next::home_dir()
+            .expect("Error: unable to find home directory")
+            .join(".config/bat/config");
+        let theme_insert = format!("{}{}", BAT_SETTINGS_STARTS_WITH, theme);
+        theme_file(setting, BAT_SETTINGS_STARTS_WITH, theme_insert)?;
         Ok(())
     }
     pub fn is_some(&self) -> bool {
-        self.dark_theme.is_some() && self.light_theme.is_some() && dirs_next::home_dir().expect("Error: unable to find home directory").join(".config/Bat/config").is_file()
+        self.dark_theme.is_some()
+            && self.light_theme.is_some()
+            && dirs_next::home_dir()
+                .expect("Error: unable to find home directory")
+                .join(".config/Bat/config")
+                .is_file()
     }
 }

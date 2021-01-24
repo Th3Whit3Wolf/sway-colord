@@ -65,29 +65,28 @@ const CONFIG: &str = "(
     )
 )";
 
-
 #[test]
 fn test_read_config() {
     let conf: Config = from_str(CONFIG).unwrap();
-    if !conf.alacritty.is_some() {
+    if conf.alacritty.is_none() {
         panic!("Alacritty not detected")
     }
-    if !conf.bat.is_some() {
+    if conf.bat.is_none() {
         panic!("VSCode not detected")
     }
-    if !conf.gsettings.is_some() {
+    if conf.gsettings.is_none() {
         panic!("GSettings not detected")
     }
-    if !conf.lighting.is_some() {
+    if conf.lighting.is_none() {
         panic!("VSCode not detected")
     }
-    if !conf.mako.is_some() {
+    if conf.mako.is_none() {
         panic!("Mako not detected")
     }
-    if !conf.spotify.is_some() {
+    if conf.spotify.is_none() {
         panic!("Spotify not detected")
     }
-    if !conf.vscode.is_some() {
+    if conf.vscode.is_none() {
         panic!("VSCode not detected")
     }
 }

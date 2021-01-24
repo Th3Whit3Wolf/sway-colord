@@ -29,7 +29,9 @@ impl Mako {
         Ok(())
     }
     pub fn is_some(&self) -> bool {
-        let mako_dir = dirs_next::home_dir().expect("Error: unable to find home directory").join(".config/mako");
+        let mako_dir = dirs_next::home_dir()
+            .expect("Error: unable to find home directory")
+            .join(".config/mako");
         if let Some(light_path) = &self.light_theme {
             if mako_dir.join(light_path).is_file() {
                 if let Some(dark_path) = &self.dark_theme {
@@ -59,7 +61,7 @@ fn change_theme(theme: &str) -> Result<()> {
             pids.push(prc.stat.pid)
         }
     }
-    if pids.is_empty() == false {
+    if !pids.is_empty() {
         for pid in &pids {
             println!("PID: {:?}", pid);
             unsafe { kill(*pid, 9) };
@@ -67,7 +69,7 @@ fn change_theme(theme: &str) -> Result<()> {
     }
     pids.clear();
 
-    println!("Mako theme path: {}",&theme);
+    println!("Mako theme path: {}", &theme);
     let outputs = File::create("/tmp/mako.log")?;
     let errors = outputs.try_clone()?;
 
