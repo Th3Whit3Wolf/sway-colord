@@ -112,7 +112,7 @@ impl Lighting {
             let cur_b = get_kbd_current_brightness(dev.as_str())?;
             let cur_p = (cur_b as f64 / max_b as f64 * 100.0).round();
 
-            if light_perc < 100u64 && light_perc != cur_p as u64 {
+            if light_perc < 100_u64 && light_perc != cur_p as u64 {
                 match sd_bus.call_method(
                     Some("org.freedesktop.login1"),
                     "/org/freedesktop/login1/session/auto",
