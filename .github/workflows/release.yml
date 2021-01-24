@@ -49,7 +49,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/release/sway-colord
-          asset_name: sway-colord-linux-amd64
+          asset_name: sway-colord-${{ github.event.release.tag_name }}-x86_64
           tag: ${{ github.ref }}
           overwrite: true
 
@@ -57,9 +57,13 @@ jobs:
         env:
           DESTDIR: '~/sway-colord-deb'
         run: |
-          mkdir -p $DESTDIR
-          RELEASE_VERSION=${{ github.event.release.tag_name }} DESTDIR=$DESTDIR make release-version
-          RELEASE_VERSION=${{ github.event.release.tag_name }} DESTDIR=$DESTDIR make debian-pkg
+          mkdir -p $DESTDIR/DEBIAN
+          cp build-os/debian/control $(DESTDIR)/DEBIAN/
+          echo "Version: ${{ github.event.release.tag_name }}" >> $(DESTDIR)/DEBIAN/control
+          cp build-os/debian/postinst $(DESTDIR)/DEBIAN/
+          chmod 775 $(DESTDIR)/DEBIAN/postinst
+          dpkg-deb --build $(DESTDIR) authenticator-rs-${{ github.event.release.tag_name }}-x86_64.deb
+          md5sum sway-colord-${{ github.event.release.tag_name }}-x86_64.deb > sway-colord-${{ github.event.release.tag_name }}-x86_64.deb.md5sum
       - name: Upload Debian release
         uses: actions/upload-release-asset@v1
         env:
@@ -90,8 +94,7 @@ jobs:
 
       - name: Prepare arch package metadata
         run: |
-          wget https://github.com/grumlimited/sway-colord/releases/download/${{ github.event.release.tag_name }}/sway-colord-${{ github.event.release.tag_name }}-x86_64.deb -O build-os/arch/sway-colord/sway-colord-${{ github.event.release.tag_name }}-x86_64.deb
-          MD5_SUM=$(md5sum build-os/arch/sway-colord/sway-coloWrd-${{ github.event.release.tag_name }}-x86_64.deb  | awk '{print $1}')
+          MD5_SUM=$(md5sum target/release/sway-colord | awk '{print $1}')
           awk -v q="'" -v MD5_SUM=$MD5_SUM -i inplace 'BEGINFILE{print "md5sums=(" q MD5_SUM q ")"}{print}' build-os/arch/sway-colord/PKGBUILD
           awk -i inplace 'BEGINFILE{print "pkgver=${{ github.event.release.tag_name }}"}{print}' build-os/arch/sway-colord/PKGBUILD
       - name: Validate PKGBUILD
