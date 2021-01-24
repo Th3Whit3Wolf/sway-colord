@@ -200,24 +200,24 @@ impl Config {
     }
     pub fn load() -> Result<Config> {
         if let Ok(file) = File::open(Config::get_data()) {
-            match from_reader(file) {
-                Ok(data) => data,
+            let _config: Config = match from_reader(file) {
+                Ok(data) => return Ok(data),
                 Err(e) => {
                     println!("Failed to load config: {}", e);
 
                     std::process::exit(1);
                 }
-            }
+            };
         }
         if let Ok(global) = File::open(Path::new(GLOBAL_CONF)) {
-            match from_reader(global) {
-                Ok(data) => data,
+            let _config: Config =  match from_reader(global) {
+                Ok(data) => return Ok(data),
                 Err(e) => {
                     println!("Failed to load config: {}", e);
 
                     std::process::exit(1);
                 }
-            }
+            };
         }
         return Ok(Config::default());
     }
