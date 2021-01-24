@@ -73,9 +73,9 @@ async fn main() -> Result<()> {
     match conf.timechange.clone() {
         config::TimeChange::Rigid(morning, night) => {
             let dawn = NaiveTime::parse_from_str(&morning, "%H:%M:%S")
-                .unwrap_or_else(|_|{NaiveTime::from_hms(7, 0, 0)});
+                .unwrap_or_else(|_| NaiveTime::from_hms(7, 0, 0));
             let dusk = NaiveTime::parse_from_str(&night, "%H:%M:%S")
-                .unwrap_or_else(|_|{NaiveTime::from_hms(19, 0, 0)});
+                .unwrap_or_else(|_| NaiveTime::from_hms(19, 0, 0));
             auto_change_rigid(conf, dawn, dusk).await?;
         }
         config::TimeChange::Solar(lattitude, longitude) => {
