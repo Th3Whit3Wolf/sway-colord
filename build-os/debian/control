@@ -1,8 +1,0 @@
-Package: sway-colord
-Section: development
-Priority: optional
-Architecture: all
-Depends:
-Maintainer: dkarrick2_at_gmail.com
-Description: Sway Color Daemon
- sway-colord is a WIP daemon for sway to automatically change light and dark themes based on the time of day..

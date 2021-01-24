@@ -1,0 +1,11 @@
+# Maintainer: David Karrick <the.white.wolf.is.1337@gmail.com>
+pkgname=sway-colord
+pkgver=0.0.0
+pkgrel=1
+pkgdesc='WIP daemon for sway to automatically change light & dark themes'
+url="https://github.com/Th3Whit3Wolf/sway-colord"
+makedepends=('cargo')
+arch=('any')
+provides=('sway-colord')
+license=('apache')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/Th3Whit3Wolf/$pkgname/archive/v$pkgver.tar.gz")

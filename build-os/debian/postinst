@@ -1,5 +1,0 @@
-#!/bin/sh
-
-chmod +x /usr/bin/sway-colord
-
-exit 0

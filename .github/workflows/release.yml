@@ -1,129 +1,372 @@
 on:
   push:
-    # Sequence of patterns matched against refs/tags
     tags:
-      - 'v*'
+    - 'v*'
+    - 'ci-test'
 
-name: Create Release
+name: release
 
 jobs:
-  ci:
+  release:
+    name: Create Release
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust:
-          - 1.49.0  # MSRV
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/release
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: System dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc
-          mkdir -p ~/.cargo/release
-          
-      - name: Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          override: true
-          components: rustfmt, clippy
-
-      - name: Build
-        run: cargo build --release && strip target/release/sway-colord
-
-      - name: Upload binary to release
-        uses: svenstaro/upload-release-action@v1-release
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/sway-colord
-          asset_name: sway-colord-${{ github.event.release.tag_name }}-x86_64
-          tag: ${{ github.ref }}
-          overwrite: true
-
-      - name: Create Debian package
-        run: |
-          mkdir -p ~/sway-colord-deb/DEBIAN
-          cp build-os/debian/control ~/sway-colord-deb/DEBIAN/
-          echo "Version: ${{ github.event.release.tag_name }}" >> ~/sway-colord-deb/DEBIAN/control
-          cp build-os/debian/postinst $(DESTDIR)/DEBIAN/
-          chmod 775 ~/sway-colord-deb/DEBIAN/postinst
-          dpkg-deb --build ~/sway-colord-deb sway-colord-${{ github.event.release.tag_name }}-x86_64.deb
-          md5sum sway-colord-${{ github.event.release.tag_name }}-x86_64.deb > sway-colord-${{ github.event.release.tag_name }}-x86_64.deb.md5sum
-      - name: Upload Debian release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: '${{ github.event.release.upload_url }}'
-          asset_path: 'sway-colord-${{ github.event.release.tag_name }}-x86_64.deb'
-          asset_name: 'sway-colord-${{ github.event.release.tag_name }}-x86_64.deb'
-          asset_content_type: application/octet-stream
-
-      - name: Upload Debian release checksum
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: '${{ github.event.release.upload_url }}'
-          asset_path: 'sway-colord-${{ github.event.release.tag_name }}-x86_64.deb.md5sum'
-          asset_name: 'sway-colord-${{ github.event.release.tag_name }}-x86_64.deb.md5sum'
-          asset_content_type: text/plain
-
-  arch:
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Output Release URL File
+      run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url
+    - name: Save Release URL File for publish
+      uses: actions/upload-artifact@v1
+      with:
+        name: release_url
+        path: release_url
+  pkg-gentoo:
+    name: Create Gentoo Ebuild
+    needs: release
     runs-on: ubuntu-latest
-    needs: [ci]
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v1
+    - name: Release Ebuild
+      id: ebuild
+      run: |
+        VERSION="${GITHUB_REF:11}"
+        echo "::set-output name=version::$VERSION"
+        cp dist/gentoo/sway-colord.ebuild $GITHUB_WORKSPACE/sway-colord-$VERSION.ebuild
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url`
+        echo ::set-output name=upload_url::$value
+    - name: Upload Linux AMD64 Release Assets
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: sway-colord-${{ steps.ebuild.outputs.version }}.ebuild
+        asset_name: sway-colord-${{ steps.ebuild.outputs.version }}.ebuild
+        asset_content_type: text/plain
+  pkg-arch:
+    name: Create Arch PKGBUILD
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Release PKGBUILD
+      run: |
+        VERSION="${GITHUB_REF:10}"
+        sed -i 's/pkgver=.*$/pkgver='${VERSION:1}'/g' dist/archlinux/PKGBUILD
+        wget "https://github.com/Th3Whit3Wolf/sway-colord/archive/${VERSION}.tar.gz"
+        shasum=$(sha256sum $VERSION.tar.gz | grep -o '^[0-9A-Za-z]*\b')
+        sed -i "s/sha256sums=.*/sha256sums=('${shasum}')/g" dist/archlinux/PKGBUILD
+        cp dist/archlinux/PKGBUILD $GITHUB_WORKSPACE/PKGBUILD
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url`
+        echo ::set-output name=upload_url::$value
+    - name: Upload Linux any Realease Assets
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: PKGBUILD
+        asset_name: PKGBUILD
+        asset_content_type: text/plain
+  pkg-alpine:
+    name: Create Alpine APK
+    needs: release
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Release APKBUILD
+      id: apk
+      run: |
+        export VERSION="${GITHUB_REF:10}"
+        echo "::set-output name=version::${VERSION:1}"
+        apk add alpine-sdk
+        adduser -D -G abuild build
 
-      - name: Prepare arch package metadata
-        run: |
-          MD5_SUM=$(md5sum target/release/sway-colord | awk '{print $1}')
-          awk -v q="'" -v MD5_SUM=$MD5_SUM -i inplace 'BEGINFILE{print "md5sums=(" q MD5_SUM q ")"}{print}' build-os/arch/sway-colord/PKGBUILD
-          awk -i inplace 'BEGINFILE{print "pkgver=${{ github.event.release.tag_name }}"}{print}' build-os/arch/sway-colord/PKGBUILD
-      - name: Validate PKGBUILD
-        id: validate-pkgbuild
-        uses: grumlimited/arch-pkgbuild-builder@b0f22da174699e6795f4434f252e15e6c8265b9e
-        with:
-          debug: true
-          target: pkgbuild
-          pkgname: build-os/arch/sway-colord/
+        sed -i 's/pkgver=.*$/pkgver="'${VERSION:1}'"/g' dist/alpine/APKBUILD
+        wget "https://github.com/Th3Whit3Wolf/sway-colord/archive/${VERSION}.tar.gz"
+        mv $VERSION.tar.gz sway-colord-${VERSION:1}.tar.gz
+        shasum=$(sha512sum sway-colord-${VERSION:1}.tar.gz)
+        sed -i "s/sha512sums=.*$/sha512sums=\"${shasum}\"/g" dist/alpine/APKBUILD
 
-      - name: Create arch package checksum file
-        run: |
-          sudo chown -R $USER .
-          md5sum build-os/arch/sway-colord/*.zst >> build-os/arch/sway-colord/sway-colord-${{ github.event.release.tag_name }}-1-x86_64.pkg.tar.zst.md5sum
-      - name: Upload Arch Linux release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: '${{ github.event.release.upload_url }}'
-          asset_path: 'build-os/arch/sway-colord/sway-colord-${{ github.event.release.tag_name }}-1-x86_64.pkg.tar.zst'
-          asset_name: 'sway-colord-${{ github.event.release.tag_name }}-1-x86_64.pkg.tar.zst'
-          asset_content_type: application/octet-stream
+        chmod 777 dist/alpine
+        chmod 666 dist/alpine/APKBUILD
 
-      - name: Upload Arch Linux release checksum
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: '${{ github.event.release.upload_url }}'
-          asset_path: 'build-os/arch/sway-colord/sway-colord-${{ github.event.release.tag_name }}-1-x86_64.pkg.tar.zst.md5sum'
-          asset_name: 'sway-colord-${{ github.event.release.tag_name }}-1-x86_64.pkg.tar.zst.md5sum'
-          asset_content_type: text/plain
+        cd dist/alpine
+        su build -c "abuild-keygen -a -n && abuild -r"
+
+        cp /home/build/packages/dist/x86_64/sway-colord-${VERSION:1}-r0.apk $GITHUB_WORKSPACE/sway-colord-${VERSION:1}-r0.apk
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url`
+        echo ::set-output name=upload_url::$value
+    - name: Upload Linux any Realease Assets
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: sway-colord-${{ steps.apk.outputs.version }}-r0.apk
+        asset_name: sway-colord-${{ steps.apk.outputs.version }}-r0.apk
+        asset_content_type: text/plain
+  pkg-rpm:
+    name: Create RPM
+    needs: release
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build RPM
+      id: rpm
+      run: |
+        export VERSION="${GITHUB_REF:11}"
+        echo "::set-output name=version::$VERSION"
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
+          --default-toolchain stable --profile minimal -y
+        source $HOME/.cargo/env
+        dnf install gcc rpmdevtools -y
+        cargo install cargo-rpm
+        cargo build --release
+        cargo rpm build -v
+        cp target/release/rpmbuild/RPMS/x86_64/sway-colord-*.x86_64.rpm $GITHUB_WORKSPACE/sway-colord-${VERSION}-0.x86_64.rpm
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url`
+        echo ::set-output name=upload_url::$value
+    - name: Upload Linux any Realease Assets
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: sway-colord-${{ steps.rpm.outputs.version }}-0.x86_64.rpm
+        asset_name: sway-colord-${{ steps.rpm.outputs.version }}-0.x86_64.rpm
+        asset_content_type: application/octet-stream
+  pkg-deb:
+    name: Create DEB
+    needs: release
+    runs-on: ubuntu-latest
+    container: debian:oldstable
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build DEB
+      id: deb
+      shell: bash
+      run: |
+        export VERSION="${GITHUB_REF:11}"
+        echo "::set-output name=version::$VERSION"
+        apt-get update && apt-get install -y curl gcc
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
+          --default-toolchain stable --profile minimal -y
+        source $HOME/.cargo/env
+        cargo install cargo-deb
+        cargo deb -v
+        cp target/debian/sway-colord_*_amd64.deb $GITHUB_WORKSPACE/sway-colord_${VERSION}_amd64.deb
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url`
+        echo ::set-output name=upload_url::$value
+    - name: Upload Linux any Realease Assets
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: sway-colord_${{ steps.deb.outputs.version }}_amd64.deb
+        asset_name: sway-colord_${{ steps.deb.outputs.version }}_amd64.deb
+        asset_content_type: application/octet-stream
+  build-linux-amd64:
+    name: Release Linux AMD64
+    needs: release
+    runs-on: ubuntu-latest
+    container: clux/muslrust:stable
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build Linux AMD64
+      run: |
+        HOME=/root cargo build --target x86_64-unknown-linux-musl --release
+        strip target/x86_64-unknown-linux-musl/release/sway-colord
+        mv target/x86_64-unknown-linux-musl/release/sway-colord $GITHUB_WORKSPACE/sway-colord-linux-amd64
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url`
+        echo ::set-output name=upload_url::$value
+    - name: Upload Linux AMD64 Release Assets
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: sway-colord-linux-amd64
+        asset_name: sway-colord-linux-amd64
+        asset_content_type: application/octet-stream
+  build-linux-arm:
+    name: Release Linux ARM
+    needs: release
+    runs-on: ubuntu-latest
+    container: clux/muslrust:stable
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build Linux ARM
+      run: |
+        export HOME=/root
+        apt-get update && apt-get install -y gcc-arm-linux-gnueabi
+        rustup target add arm-unknown-linux-musleabi
+        mkdir -p ~/.cargo
+        cat >> ~/.cargo/config <<EOF
+        [target.arm-unknown-linux-musleabi]
+        linker = "arm-linux-gnueabi-gcc"
+        EOF
+
+        cargo build --target arm-unknown-linux-musleabi --release
+        arm-linux-gnueabi-strip target/arm-unknown-linux-musleabi/release/sway-colord
+        mv target/arm-unknown-linux-musleabi/release/sway-colord $GITHUB_WORKSPACE/sway-colord-linux-arm
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url`
+        echo ::set-output name=upload_url::$value
+    - name: Upload Linux ARM Release Assets
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: sway-colord-linux-arm
+        asset_name: sway-colord-linux-arm
+        asset_content_type: application/octet-stream
+  build-linux-armhf:
+    name: Release Linux ARMhf
+    needs: release
+    runs-on: ubuntu-latest
+    container: clux/muslrust:stable
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build Linux ARMhf
+      run: |
+        export HOME=/root
+        apt-get update && apt-get install -y gcc-arm-linux-gnueabihf
+        rustup target add arm-unknown-linux-musleabihf
+        mkdir -p ~/.cargo
+        cat >> ~/.cargo/config <<EOF
+        [target.arm-unknown-linux-musleabihf]
+        linker = "arm-linux-gnueabihf-gcc"
+        EOF
+
+        cargo build --target arm-unknown-linux-musleabihf --release
+        arm-linux-gnueabihf-strip target/arm-unknown-linux-musleabihf/release/sway-colord
+        mv target/arm-unknown-linux-musleabihf/release/sway-colord $GITHUB_WORKSPACE/sway-colord-linux-armhf
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url`
+        echo ::set-output name=upload_url::$value
+    - name: Upload Linux ARMhf Release Assets
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: sway-colord-linux-armhf
+        asset_name: sway-colord-linux-armhf
+        asset_content_type: application/octet-stream
+  build-linux-aarch64:
+    name: Release AARCH64 Linux
+    needs: release
+    runs-on: ubuntu-latest
+    container: clux/muslrust:stable
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build Linux AARCH64
+      run: |
+        export HOME=/root
+        apt-get update && apt-get install -y gcc-aarch64-linux-gnu
+        rustup target add aarch64-unknown-linux-musl
+        mkdir -p ~/.cargo
+        cat >> ~/.cargo/config <<EOF
+        [target.aarch64-unknown-linux-musl]
+        linker = "aarch64-linux-gnu-gcc"
+        rustflags = [ "-C", "target-feature=+crt-static", "-C", "link-arg=-lgcc" ]
+        EOF
+
+        cargo build --target aarch64-unknown-linux-musl --release
+        aarch64-linux-gnu-strip target/aarch64-unknown-linux-musl/release/sway-colord
+        mv target/aarch64-unknown-linux-musl/release/sway-colord $GITHUB_WORKSPACE/sway-colord-linux-aarch64
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url`
+        echo ::set-output name=upload_url::$value
+    - name: Upload Release Assets
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: sway-colord-linux-aarch64
+        asset_name: sway-colord-linux-aarch64
+        asset_content_type: application/octet-stream
+  

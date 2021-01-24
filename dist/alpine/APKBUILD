@@ -1,0 +1,21 @@
+# Maintainer: David Karrick <the.white.wolf.is.1337@gmail.com>
+pkgname="sway-colord"
+pkgver="0.0.0"
+pkgrel=0
+pkgdesc='WIP daemon for sway to automatically change light & dark themes'
+url="https://github.com/Th3Whit3Wolf/sway-colord"
+arch="all"
+license="GPL-3-or-later"
+makedepends="cargo"
+source="$pkgname-$pkgver.tar.gz::https://github.com/Th3Whit3Wolf/$pkgname/archive/v$pkgver.tar.gz"
+#sha512sums="d44f8e85f21bcd9bebe09d2adbfe1690c5bd9bf9c948f3d353d02107d8d495ffac196ea917004cbbc41acba34d4cd9a63a282e0b651a6c458e7dab1842f2a767  snore-$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cargo build --release --target-dir "./target"
+}
+
+package() {
+	install -Dm755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+	install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

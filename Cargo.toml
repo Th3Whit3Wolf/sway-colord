@@ -3,6 +3,10 @@ authors = ["David Karrick <the.white.wolf.is.1337@gmail.com>"]
 edition = "2018"
 name = "sway-colord"
 version = "0.1.0"
+license = "apache"
+description = "a daemon for sway to automatically change light and dark themes based on the time of day."
+readme = "README.md"
+homepage = "https://github.com/Th3Whit3Wolf/sway-colord"
 
 [dependencies]
 anyhow = "1.0.37"
