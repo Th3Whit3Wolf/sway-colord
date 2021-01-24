@@ -2,7 +2,7 @@ on:
   push:
     tags:
     - 'v*'
-    - 'ci-test'
+    - 'ci-test*'
 
 name: release
 
