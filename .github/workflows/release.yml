@@ -1,9 +1,10 @@
 on:
-  release:
-    types:
-      - created
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*'
 
-name: Continuous integration
+name: Create Release
 
 jobs:
   ci:
@@ -57,12 +58,13 @@ jobs:
         env:
           DESTDIR: '~/sway-colord-deb'
         run: |
+          mkdir -p $DESTDIR
           mkdir -p $DESTDIR/DEBIAN
-          cp build-os/debian/control $(DESTDIR)/DEBIAN/
-          echo "Version: ${{ github.event.release.tag_name }}" >> $(DESTDIR)/DEBIAN/control
+          cp build-os/debian/control $DESTDIR/DEBIAN/
+          echo "Version: ${{ github.event.release.tag_name }}" >> $DESTDIR/DEBIAN/control
           cp build-os/debian/postinst $(DESTDIR)/DEBIAN/
-          chmod 775 $(DESTDIR)/DEBIAN/postinst
-          dpkg-deb --build $(DESTDIR) authenticator-rs-${{ github.event.release.tag_name }}-x86_64.deb
+          chmod 775 $DESTDIR/DEBIAN/postinst
+          dpkg-deb --build $DESTDIR sway-colord-${{ github.event.release.tag_name }}-x86_64.deb
           md5sum sway-colord-${{ github.event.release.tag_name }}-x86_64.deb > sway-colord-${{ github.event.release.tag_name }}-x86_64.deb.md5sum
       - name: Upload Debian release
         uses: actions/upload-release-asset@v1
