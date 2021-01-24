@@ -26,3 +26,7 @@ version = "1"
 features = ["serde_derive"]
 version = "1.0.60"
 
+[dev-dependencies.cargo-husky]
+version = "1"
+default-features = false # Disable features which are enabled by default
+features = ["precommit-hook", "run-cargo-test", "run-cargo-clippy", "run-cargo-fmt"]
