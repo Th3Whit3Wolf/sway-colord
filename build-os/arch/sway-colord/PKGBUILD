@@ -1,0 +1,26 @@
+# Maintainer: David Karrick <the.white.wolf.is.1337@gmail.com>
+pkgname=sway-colord
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='WIP daemon for sway to automatically change light & dark themes'
+makedepends=('rust' 'cargo')
+provides=('sway-colord')
+arch=('i686' 'x86_64' 'armv6h' 'armv7h')
+
+build(){
+  cd "$pkgname"
+  env CARGO_INCREMENTAL=0 cargo build --release
+}
+
+check(){
+  cd "$pkgname"
+  env CARGO_INCREMENTAL=0 cargo test --release
+}
+
+
+package() {
+  install -Dm755 "$srcdir/$pkgname/target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+  install -Dm644 "$srcdir/$pkgname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+
+
