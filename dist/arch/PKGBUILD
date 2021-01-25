@@ -3,17 +3,32 @@ pkgname=sway-colord
 pkgver=0.0.0
 pkgrel=1
 pkgdesc='WIP daemon for sway to automatically change light & dark themes'
-url="https://github.com/Th3Whit3Wolf/sway-colord"
-makedepends=('cargo')
-arch=('any')
+url="https://github.com/Th3Whit3Wolf/$pkgname"
+makedepends=('cargo' 'git')
+arch=($CARCH)
 provides=('sway-colord')
+source=("git+https://github.com/Th3Whit3Wolf/$pkgname")
+sha512sums=('SKIP')
 license=('apache')
 
+pkgver() {
+  cd "$srcdir/$pkgname"
+  git describe --long --tags | awk -F '-' '{print $1}'| sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "$srcdir/$pkgname"
+  cargo fetch --target $CARCH-unknown-linux-gnu
+}
 
 build() {
-    return 0
+  cd "$srcdir/$pkgname"
+  cargo build --release --frozen --all-targets
 }
 
 package() {
-    cargo install --root="$pkgdir" sway-colord
+  cd "$srcdir/$pkgname"
+  install -Dt "$pkgdir/usr/bin" target/release/$pkgname
+  install -Dt "$pkgdir/usr/share/doc/$pkgname" -m644 README.md
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
