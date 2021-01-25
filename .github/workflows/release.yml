@@ -6,6 +6,7 @@ on:
     - 'v*'
     - 'ci-test*'
 
+
 jobs:
   make_bin:
     name: Build Linux AMD64, ARM, AARCH64 Binaries
@@ -29,7 +30,6 @@ jobs:
          with:
            name: sway-colord-linux-amd64
            path: ./target/x86_64-unknown-linux-musl/release/sway-colord
-       - uses: actions/checkout@v2
        - name: Build Linux ARM Binary
          run: |
           export HOME=/root
@@ -45,7 +45,6 @@ jobs:
          with:
            name: sway-colord-linux-armhf
            path: ./target/arm-unknown-linux-musleabihf/release/sway-colord 
-       - uses: actions/checkout@v2
        - name: Build Linux AARCH64 Binary
          run: |
           export HOME=/root
