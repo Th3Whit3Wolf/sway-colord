@@ -11,10 +11,6 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
-    - name: Get the release version from the tag
-      run: |
-        echo "ver=$(cat Cargo.toml | grep version | head -n1 | cut -d '"' -f2)" >> $GITHUB_ENV
-        echo "version is: ${{ env.ver }}"
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1.0.0
@@ -74,6 +70,9 @@ jobs:
           - /sys/fs/cgroup:/sys/fs/cgroup
     steps:
     - uses: actions/checkout@v1
+      run: |
+        echo "ver=$(cat Cargo.toml | grep version | head -n1 | cut -d '"' -f2)" >> $GITHUB_ENV
+        echo "version is: ${{ env.ver }}"
     - name: Release Arch Linux package
       uses: house-of-vanity/build-arch-package@master
       with:
