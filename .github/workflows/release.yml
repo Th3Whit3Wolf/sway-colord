@@ -12,13 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Get the release version from the tag
-      if: env.V_VERSION == ''
       run: |
-        # Apparently, this is the right way to get a tag name. Really?
-        #
-        # See: https://github.community/t5/GitHub-Actions/How-to-get-just-the-tag-name/m-p/32167/highlight/true#M1027
-        echo "::set-env name=V_VERSION::$(cat Cargo.toml | grep version | head -n1 | cut -d '"' -f2)"
-        echo "version is: ${{ env.V_VERSION }}"
+        echo "ver=$(cat Cargo.toml | grep version | head -n1 | cut -d '"' -f2)" >> $GITHUB_ENV
+        echo "version is: ${{ env.ver }}"
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1.0.0
