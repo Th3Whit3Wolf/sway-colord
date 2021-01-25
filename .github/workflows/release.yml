@@ -131,7 +131,7 @@ jobs:
       
   publish:
     name: Publish release
-    needs: [make_bin, make_alpine, make_arch, make_deb, make_ebuild, make_rpm]
+    needs: [make_bin, make_alpine, make_arch, make_deb, make_rpm]
     runs-on: ubuntu-latest
     steps:
       - name: Get the version (git tag)
