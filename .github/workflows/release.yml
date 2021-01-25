@@ -35,7 +35,7 @@ jobs:
          run: |
           HOME=/root cargo build --target x86_64-unknown-linux-musl --release
           strip target/x86_64-unknown-linux-musl/release/sway-colord
-          target/x86_64-unknown-linux-musl/release/sway-colord sway-colord-linux-amd64
+          mv target/x86_64-unknown-linux-musl/release/sway-colord sway-colord-linux-amd64
        - name: Upload AMD64 Binary
          uses: actions/upload-artifact@v1
          with:
@@ -45,8 +45,7 @@ jobs:
          run: |
           HOME=/root cargo build --target arm-unknown-linux-musleabihf --release
           arm-linux-gnueabihf-strip target/arm-unknown-linux-musleabihf/release/sway-colord
-          target/x86_64-unknown-linux-musl/release/sway-colord sway-colord-linux-armhf
-
+          mv target/x86_64-unknown-linux-musl/release/sway-colord sway-colord-linux-armhf
        - name: Upload Linux ARM Binary
          uses: actions/upload-artifact@v1
          with:
