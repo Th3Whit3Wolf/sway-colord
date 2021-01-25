@@ -233,4 +233,3 @@ jobs:
            ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.rpm    --file ./sway-colord.x86_64.rpm
            ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-amd64   --file ./sway-colord-linux-amd64
            ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-armhf   --file ./sway-colord-linux-armhf
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-aarch64 --file ./sway-colord-linux-aarch64
