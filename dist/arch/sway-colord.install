@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Where post install instructions go
+post_install() {
+
+}
