@@ -18,11 +18,12 @@ jobs:
        - name: Pre-build
          run: |
           apt-get update && apt-get install -y gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
-          rustup target add aarch64-unknown-linux-musl
-          rustup target add arm-unknown-linux-musleabihf
           rustup install stable
           rustup default stable
+          rustup target add aarch64-unknown-linux-musl
+          rustup target add arm-unknown-linux-musleabihf
           mkdir -p ~/.cargo
+       - uses: actions/checkout@v2
        - name: Build Linux AMD64 Binary
          run: |
           HOME=/root cargo build --target x86_64-unknown-linux-musl --release
@@ -87,7 +88,6 @@ jobs:
           wget "https://github.com/Th3Whit3Wolf/sway-colord/archive/${VERSION}.tar.gz"
           mv $VERSION.tar.gz sway-colord-${VERSION:1}.tar.gz
           shasum=$(sha512sum sway-colord-${VERSION:1}.tar.gz)
-          
           sed -i "s/sha512sums=.*$/sha512sums=\"${shasum}\"/g" dist/alpine/APKBUILD
           chmod 777 dist/alpine
           chmod 666 dist/alpine/APKBUILD
@@ -142,7 +142,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Copy Ebuild
-        run: dist/gentoo/sway-colord.ebuild $GITHUB_WORKSPACE/sway-colord.ebuild
+        run: mv dist/gentoo/sway-colord.ebuild $GITHUB_WORKSPACE/sway-colord.ebuild
       - name: Upload Arch Package
         uses: actions/upload-artifact@v1
         with:
@@ -157,8 +157,6 @@ jobs:
        uses: actions/checkout@v2
      - name: Pre-build
        run: |
-          export VERSION="${GITHUB_REF:11}"
-          echo "::set-output name=version::$VERSION"
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
           --default-toolchain stable --profile minimal -y
           source $HOME/.cargo/env
