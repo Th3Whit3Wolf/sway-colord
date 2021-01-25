@@ -82,7 +82,7 @@ jobs:
           chmod 666 $GITHUB_WORKSPACE/.github/workflows/dist/alpine/APKBUILD
           cd $GITHUB_WORKSPACE/.github/workflows/dist/alpine
           su build -c "abuild-keygen -a -n && abuild -r"
-          mv $GITHUB_WORKSPACE/.github/workflows/dist/x86_64/sway-colord-${VERSION:1}-r0.apk $GITHUB_WORKSPACE/sway-colord.apk
+          mv /home/build/packages/dist/x86_64/sway-colord-${VERSION:1}-r0.apk $GITHUB_WORKSPACE/sway-colord.apk
       - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
