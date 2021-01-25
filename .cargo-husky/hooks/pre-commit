@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+echo '+cargo test'
+cargo test
+echo '+cargo clippy -- -D clippy::all'
+cargo clippy -- -D clippy::all
+echo '+cargo fmt --all -- --check'
+cargo fmt --all -- --check
