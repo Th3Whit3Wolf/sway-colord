@@ -30,7 +30,37 @@ jobs:
          with:
            name: sway-colord-linux-amd64
            path: ./target/x86_64-unknown-linux-musl/release/sway-colord
+       - name: Build Linux ARM Binary
+         run: |
+          export HOME=/root
+          cat >> ~/.cargo/config <EOF
+          [target.arm-unknown-linux-musleabihf]
+          linker = "arm-linux-gnueabihf-gcc"
+          EOF
 
+          cargo build --target arm-unknown-linux-musleabihf --release
+          arm-linux-gnueabihf-strip target/arm-unknown-linux-musleabihf/release/sway-colord
+       - name: Upload Linux ARM Binary
+         uses: actions/upload-artifact@v1
+         with:
+           name: sway-colord-linux-armhf
+           path: ./target/arm-unknown-linux-musleabihf/release/sway-colord 
+       - name: Build Linux AARCH64 Binary
+         run: |
+          export HOME=/root
+          cat >> ~/.cargo/config <EOF
+          [target.aarch64-unknown-linux-musl]
+          linker = "aarch64-linux-gnu-gcc"
+          rustflags = [ "-C", "target-feature=+crt-static", "-C", "link-arg=-lgcc" ]
+          EOF
+
+          cargo build --target aarch64-unknown-linux-musl --release
+          aarch64-linux-gnu-strip target/aarch64-unknown-linux-musl/release/sway-colord
+       - name: Upload Linux ARM  Binary
+         uses: actions/upload-artifact@v1
+         with:
+           name: sway-colord-linux-aarch64
+           path: ./target/aarch64-unknown-linux-musl/release/sway-colord
   make_alpine:
     name: Make Alpine Linux package
     runs-on: ubuntu-latest
@@ -97,117 +127,4 @@ jobs:
         with:
           name: sway-colord_amd64.deb
           path: ./target/debian/sway-colord_amd64.deb
-  make_ebuild:
-      name: Make Gentoo Ebuild package
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - name: Ebuild
-        - run: dist/gentoo/sway-colord.ebuild $GITHUB_WORKSPACE/sway-colord.ebuild
-        - name: Upload Arch Package
-          uses: actions/upload-artifact@v1
-          with:
-            name: sway-colord.ebuild
-            path: ./sway-colord.ebuild
-  make_rpm:
-    name: Make RHEL package
-    runs-on: ubuntu-latest
-    container: fedora:latest
-    steps:
-     - name: Checkout code
-       uses: actions/checkout@v2
-     - name: Pre-build
-       run: |
-          export VERSION="${GITHUB_REF:11}"
-          echo "::set-output name=version::$VERSION"
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
-          --default-toolchain stable --profile minimal -y
-          source $HOME/.cargo/env
-          dnf install gcc rpmdevtools -y
-          cargo install cargo-rpm
-     - uses: actions/checkout@v2
-     - name: Build rpm
-       run: |
-         cargo build --release
-         cargo rpm build -v
-         cp target/release/rpmbuild/RPMS/x86_64/sway-colord-*.x86_64.rpm $GITHUB_WORKSPACE/sway-colord.x86_64.rpm          
-     - name: Upload binary
-       uses: actions/upload-artifact@v1
-       with:
-          name: sway-colord.x86_64.rpm
-          path: ./sway-colord.x86_64.rpm      
-      
-  publish:
-    name: Publish release
-    needs: [make_bin, make_alpine, make_arch, make_deb, make_ebuild, make_rpm]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get the version (git tag)
-        id: get_version
-        run: |
-          echo ${GITHUB_REF/refs\/tags\/v/}
-          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
-          echo ::set-output name=FULL_TAG::${GITHUB_REF/refs\/tags\//}
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Download Linux AMD64 Binary
-        uses: actions/download-artifact@v1
-        with:
-          name: sway-colord-linux-amd64
-          path: ./
-      - name: Download Linux ARM Binary
-        uses: actions/download-artifact@v1
-        with:
-          name: sway-colord-linux-armhf
-          path: ./
-      - name: Download AARCH64 Binary
-        uses: actions/download-artifact@v1
-        with:
-          name: sway-colord-linux-aarch64
-          path: ./
-      - name: Download Alpine Package
-        uses: actions/download-artifact@v1
-        with:
-          name: sway-colord.apk
-          path: ./
-      - name: Download Arch Package
-        uses: actions/download-artifact@v1
-        with:
-          name: arch_linux_sway-colord-x86_64.pkg.tar.zst
-          path: ./
-      - name: Download Deb Package
-        uses: actions/download-artifact@v1
-        with:
-          name: sway-colord_amd64.deb
-          path: ./
-      - name: Download Gento Ebuild
-        uses: actions/download-artifact@v1
-        with:
-          name: sway-colord.ebuild
-          path: ./
-      - name: Download RHEL Package
-        uses: actions/download-artifact@v1
-        with:
-          name: sway-colord.x86_64.rpm
-          path: ./
-      - name: Upload binary assets
-        run: |
-           wget https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2
-           tar xjf linux-amd64-github-release.tar.bz2
-           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
   
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.apk    --file ./sway-colord.apk
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord_${{ steps.get_version.outputs.VERSION }}_amd64.deb     --file ./sway-colord_amd64.deb
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.ebuild --file ./sway-colord.ebuild
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.rpm    --file ./sway-colord.x86_64.rpm
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-amd64   --file ./sway-colord-linux-amd64
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-armhf   --file ./sway-colord-linux-armhf
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-aarch64 --file ./sway-colord-linux-aarch64
