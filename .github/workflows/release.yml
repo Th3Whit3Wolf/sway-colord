@@ -79,18 +79,26 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build apk
         run: |
-          sed -i 's/pkgver=.*$/pkgver="'${{ steps.apk.outputs.version }}'"/g' dist/alpine/APKBUILD
-          shasum=$(sha512sum sway-colord.tar.gz)
+          export VERSION="${GITHUB_REF:10}"
+          echo "::set-output name=version::${VERSION:1}"
+          apk add alpine-sdk
+          adduser -D -G abuild build
+          sed -i 's/pkgver=.*$/pkgver="'${VERSION:1}'"/g' dist/alpine/APKBUILD
+          wget "https://github.com/Th3Whit3Wolf/sway-colord/archive/${VERSION}.tar.gz"
+          mv $VERSION.tar.gz sway-colord-${VERSION:1}.tar.gz
+          shasum=$(sha512sum sway-colord-${VERSION:1}.tar.gz)
+          
           sed -i "s/sha512sums=.*$/sha512sums=\"${shasum}\"/g" dist/alpine/APKBUILD
           chmod 777 dist/alpine
           chmod 666 dist/alpine/APKBUILD
           cd dist/alpine
           su build -c "abuild-keygen -a -n && abuild -r"
+          mv /home/build/packages/dist/x86_64/sway-colord-${VERSION:1}-r0.apk $GITHUB_WORKSPACE/sway-colord.apk
       - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
           name: sway-colord.apk
-          path: /home/build/packages/dist/x86_64/sway-colord-${{ steps.apk.outputs.version }}-r0.apk
+          path: /sway-colord.apk
   make_arch:
       name: Make Arch Linux package
       runs-on: ubuntu-latest
@@ -128,6 +136,18 @@ jobs:
         with:
           name: sway-colord_amd64.deb
           path: ./target/debian/sway-colord_amd64.deb
+  make_ebuild:
+    name: Make Gentoo Ebuild package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Copy Ebuild
+        run: dist/gentoo/sway-colord.ebuild $GITHUB_WORKSPACE/sway-colord.ebuild
+      - name: Upload Arch Package
+        uses: actions/upload-artifact@v1
+        with:
+          name: sway-colord.ebuild
+          path: ./sway-colord.ebuild
   make_rpm:
     name: Make RHEL package
     runs-on: ubuntu-latest
