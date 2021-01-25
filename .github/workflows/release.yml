@@ -73,16 +73,16 @@ jobs:
       - name: Build apk
         run: |
           export VERSION="${GITHUB_REF:10}"
-          sed -i 's/pkgver=.*$/pkgver="'${VERSION:1}'"/g' dist/alpine/APKBUILD
+          sed -i 's/pkgver=.*$/pkgver="'${VERSION:1}'"/g' $GITHUB_WORKSPACE/.github/workflows/dist/alpine/APKBUILD
           wget "https://github.com/Th3Whit3Wolf/sway-colord/archive/${VERSION}.tar.gz"
           mv $VERSION.tar.gz sway-colord-${VERSION:1}.tar.gz
           shasum=$(sha512sum sway-colord-${VERSION:1}.tar.gz)
-          sed -i "s/sha512sums=.*$/sha512sums=\"${shasum}\"/g" dist/alpine/APKBUILD
-          chmod 777 dist/alpine
-          chmod 666 dist/alpine/APKBUILD
-          cd dist/alpine
+          sed -i "s/sha512sums=.*$/sha512sums=\"${shasum}\"/g" $GITHUB_WORKSPACE/.github/workflows/dist/alpine/APKBUILD
+          chmod 777 $GITHUB_WORKSPACE/.github/workflows/dist/alpine
+          chmod 666 $GITHUB_WORKSPACE/.github/workflows/dist/alpine/APKBUILD
+          cd $GITHUB_WORKSPACE/.github/workflows/dist/alpine
           su build -c "abuild-keygen -a -n && abuild -r"
-          mv /home/build/packages/dist/x86_64/sway-colord-${VERSION:1}-r0.apk $GITHUB_WORKSPACE/sway-colord.apk
+          mv $GITHUB_WORKSPACE/.github/workflows/dist/x86_64/sway-colord-${VERSION:1}-r0.apk $GITHUB_WORKSPACE/sway-colord.apk
       - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
@@ -101,7 +101,7 @@ jobs:
         - name: Build Arch Linux package
           uses: house-of-vanity/build-arch-package@master
           with:
-            PKGBUILD: $GITHUB_WORKSPACE/dist/arch/PKGBUILD
+            PKGBUILD: $GITHUB_WORKSPACE/.github/workflows/dist/arch/PKGBUILD
             OUTDIR: $HOME/arch-packages
         - run: mv $HOME/arch-packages/*pkg.tar.zst sway-colord-x86_64.pkg.tar.zst
         - name: Upload Arch Package
@@ -131,7 +131,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Copy Ebuild
-        run: mv dist/gentoo/sway-colord.ebuild $GITHUB_WORKSPACE/sway-colord.ebuild
+        run: mv $GITHUB_WORKSPACE/.github/workflows/dist/gentoo/sway-colord.ebuild $GITHUB_WORKSPACE/sway-colord.ebuild
       - name: Upload Arch Package
         uses: actions/upload-artifact@v1
         with:
