@@ -63,16 +63,22 @@ jobs:
     name: Create Arch PKGBUILD
     needs: release
     runs-on: ubuntu-latest
+    container:
+        image: archlinux
+        options: --privileged
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup
     steps:
     - uses: actions/checkout@v1
     - name: Release PKGBUILD
+    - uses: house-of-vanity/build-arch-package@master
+      with:
+        PKGBUILD: $GITHUB_WORKSPACE/dist/arch/PKGBUILD
+        OUTDIR: $HOME/arch-packages
+      id: pkg
       run: |
         VERSION="${GITHUB_REF:10}"
-        sed -i 's/pkgver=.*$/pkgver='${VERSION:1}'/g' dist/arch/PKGBUILD
-        wget "https://github.com/Th3Whit3Wolf/sway-colord/archive/${VERSION}.tar.gz"
-        shasum=$(sha256sum $VERSION.tar.gz | grep -o '^[0-9A-Za-z]*\b')
-        sed -i "s/sha256sums=.*/sha256sums=('${shasum}')/g" dist/arch/PKGBUILD
-        cp dist/arch/PKGBUILD $GITHUB_WORKSPACE/PKGBUILD
+        mv $HOME/arch-packages/*pkg.tar.zst $GITHUB_WORKSPACE/sway-colord-${VERSION:1}-x86_64.pkg.tar.zst
     - name: Load Release URL File from release job
       uses: actions/download-artifact@v1
       with:
@@ -89,8 +95,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-        asset_path: PKGBUILD
-        asset_name: PKGBUILD
+        asset_path: sway-colord-${{ steps.pkg.outputs.version }}-x86_64.pkg.tar.zst
+        asset_name: sway-colord-${{ steps.pkg.outputs.version }}-x86_64.pkg.tar.zst
         asset_content_type: text/plain
   pkg-alpine:
     name: Create Alpine APK
