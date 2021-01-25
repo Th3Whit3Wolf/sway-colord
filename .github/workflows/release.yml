@@ -73,17 +73,12 @@ jobs:
       - name: Prebuild
         id: apk
         run: |
-          export VERSION="${GITHUB_REF:10}"
-          echo "::set-output name=version::${VERSION:1}"
           apk add alpine-sdk
           adduser -D -G abuild build
       - uses: actions/checkout@v2
       - name: Build apk
         run: |
           export VERSION="${GITHUB_REF:10}"
-          echo "::set-output name=version::${VERSION:1}"
-          apk add alpine-sdk
-          adduser -D -G abuild build
           sed -i 's/pkgver=.*$/pkgver="'${VERSION:1}'"/g' dist/alpine/APKBUILD
           wget "https://github.com/Th3Whit3Wolf/sway-colord/archive/${VERSION}.tar.gz"
           mv $VERSION.tar.gz sway-colord-${VERSION:1}.tar.gz
@@ -176,7 +171,7 @@ jobs:
       
   publish:
     name: Publish release
-    needs: [make_bin, make_alpine, make_arch, make_deb, make_rpm]
+    needs: [make_bin, make_alpine, make_arch, make_deb,make_ebuild, make_rpm]
     runs-on: ubuntu-latest
     steps:
       - name: Get the version (git tag)
