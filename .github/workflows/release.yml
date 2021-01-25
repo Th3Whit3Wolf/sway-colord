@@ -30,37 +30,7 @@ jobs:
          with:
            name: sway-colord-linux-amd64
            path: ./target/x86_64-unknown-linux-musl/release/sway-colord
-       - name: Build Linux ARM Binary
-         run: |
-          export HOME=/root
-          cat >> ~/.cargo/config <EOF
-          [target.arm-unknown-linux-musleabihf]
-          linker = "arm-linux-gnueabihf-gcc"
-          EOF
 
-          cargo build --target arm-unknown-linux-musleabihf --release
-          arm-linux-gnueabihf-strip target/arm-unknown-linux-musleabihf/release/sway-colord
-       - name: Upload Linux ARM Binary
-         uses: actions/upload-artifact@v1
-         with:
-           name: sway-colord-linux-armhf
-           path: ./target/arm-unknown-linux-musleabihf/release/sway-colord 
-       - name: Build Linux AARCH64 Binary
-         run: |
-          export HOME=/root
-          cat >> ~/.cargo/config <EOF
-          [target.aarch64-unknown-linux-musl]
-          linker = "aarch64-linux-gnu-gcc"
-          rustflags = [ "-C", "target-feature=+crt-static", "-C", "link-arg=-lgcc" ]
-          EOF
-
-          cargo build --target aarch64-unknown-linux-musl --release
-          aarch64-linux-gnu-strip target/aarch64-unknown-linux-musl/release/sway-colord
-       - name: Upload Linux ARM  Binary
-         uses: actions/upload-artifact@v1
-         with:
-           name: sway-colord-linux-aarch64
-           path: ./target/aarch64-unknown-linux-musl/release/sway-colord
   make_alpine:
     name: Make Alpine Linux package
     runs-on: ubuntu-latest
