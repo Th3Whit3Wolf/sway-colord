@@ -80,7 +80,7 @@ jobs:
         PKGBUILD: $GITHUB_WORKSPACE/dist/arch/PKGBUILD
         OUTDIR: $HOME/arch-packages
       id: pkg
-    - run: mv $HOME/arch-packages/*pkg.tar.zst $GITHUB_WORKSPACE/sway-colord-${{ env.V_VERSION }}-x86_64.pkg.tar.zst
+    - run: mv $HOME/arch-packages/*pkg.tar.zst $GITHUB_WORKSPACE/sway-colord-${{ env.ver }}-x86_64.pkg.tar.zst
     - name: Load Release URL File from release job
       uses: actions/download-artifact@v1
       with:
@@ -97,8 +97,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-        asset_path: sway-colord-${{ env.V_VERSION }}-x86_64.pkg.tar.zst
-        asset_name: sway-colord-${{ env.V_VERSION }}-x86_64.pkg.tar.zst
+        asset_path: sway-colord-${{ env.ver }}-x86_64.pkg.tar.zst
+        asset_name: sway-colord-${{ env.ver }}-x86_64.pkg.tar.zst
         asset_content_type: text/plain
   pkg-alpine:
     name: Create Alpine APK
