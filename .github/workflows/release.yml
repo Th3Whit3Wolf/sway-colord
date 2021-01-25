@@ -93,8 +93,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-        asset_path: sway-colord-${{ steps.pkg.outputs.version }}-x86_64.pkg.tar.zst
-        asset_name: sway-colord-${{ steps.pkg.outputs.version }}-x86_64.pkg.tar.zst
+        asset_path: sway-colord-$(git describe --long --tags | awk -F '-' '{print $1}'| sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')-x86_64.pkg.tar.zst
+        asset_name: sway-colord-$(git describe --long --tags | awk -F '-' '{print $1}'| sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')-x86_64.pkg.tar.zst
         asset_content_type: text/plain
   pkg-alpine:
     name: Create Alpine APK
