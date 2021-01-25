@@ -26,6 +26,12 @@ jobs:
           rustup target add aarch64-unknown-linux-musl
           rustup target add arm-unknown-linux-musleabihf
           mkdir -p ~/.cargo
+          cat >> ~/.cargo/config <<EOF
+          [target.arm-unknown-linux-musleabi]
+          linker = "arm-linux-gnueabi-gcc"
+          [target.arm-unknown-linux-musleabihf]
+          linker = "arm-linux-gnueabihf-gcc"
+          EOF
        - uses: actions/checkout@v2
        - name: Build Linux AMD64 Binary
          run: |
@@ -38,13 +44,7 @@ jobs:
            path: ./target/x86_64-unknown-linux-musl/release/sway-colord
        - name: Build Linux ARM Binary
          run: |
-          export HOME=/root
-          cat >> ~/.cargo/config <EOF
-          [target.arm-unknown-linux-musleabihf]
-          linker = "arm-linux-gnueabihf-gcc"
-          EOF
-
-          cargo build --target arm-unknown-linux-musleabihf --release
+          HOME=/root cargo build --target arm-unknown-linux-musleabihf --release
           arm-linux-gnueabihf-strip target/arm-unknown-linux-musleabihf/release/sway-colord
        - name: Upload Linux ARM Binary
          uses: actions/upload-artifact@v1
@@ -53,14 +53,7 @@ jobs:
            path: ./target/arm-unknown-linux-musleabihf/release/sway-colord 
        - name: Build Linux AARCH64 Binary
          run: |
-          export HOME=/root
-          cat >> ~/.cargo/config <EOF
-          [target.aarch64-unknown-linux-musl]
-          linker = "aarch64-linux-gnu-gcc"
-          rustflags = [ "-C", "target-feature=+crt-static", "-C", "link-arg=-lgcc" ]
-          EOF
-
-          cargo build --target aarch64-unknown-linux-musl --release
+          HOME=/root cargo build --target aarch64-unknown-linux-musl --release
           aarch64-linux-gnu-strip target/aarch64-unknown-linux-musl/release/sway-colord
        - name: Upload Linux ARM  Binary
          uses: actions/upload-artifact@v1
@@ -96,7 +89,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: sway-colord.apk
-          path: /sway-colord.apk
+          path: ./sway-colord.apk
   make_arch:
       name: Make Arch Linux package
       runs-on: ubuntu-latest
@@ -153,19 +146,16 @@ jobs:
     steps:
      - name: Checkout code
        uses: actions/checkout@v2
-     - name: Pre-build
+     - name: Build rpm
        run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
           --default-toolchain stable --profile minimal -y
           source $HOME/.cargo/env
           dnf install gcc rpmdevtools -y
           cargo install cargo-rpm
-     - uses: actions/checkout@v2
-     - name: Build rpm
-       run: |
-         cargo build --release
-         cargo rpm build -v
-         cp target/release/rpmbuild/RPMS/x86_64/sway-colord-*.x86_64.rpm $GITHUB_WORKSPACE/sway-colord.x86_64.rpm          
+          cargo build --release
+          cargo rpm build -v
+          cp target/release/rpmbuild/RPMS/x86_64/sway-colord-*.x86_64.rpm $GITHUB_WORKSPACE/sway-colord.x86_64.rpm          
      - name: Upload binary
        uses: actions/upload-artifact@v1
        with:
