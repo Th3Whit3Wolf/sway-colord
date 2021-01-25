@@ -70,15 +70,13 @@ jobs:
           - /sys/fs/cgroup:/sys/fs/cgroup
     steps:
     - uses: actions/checkout@v1
-    - name: Release PKGBUILD
-    - uses: house-of-vanity/build-arch-package@master
+    - name: Release Arch Linux package
+      uses: house-of-vanity/build-arch-package@master
       with:
         PKGBUILD: $GITHUB_WORKSPACE/dist/arch/PKGBUILD
         OUTDIR: $HOME/arch-packages
       id: pkg
-      run: |
-        VERSION="${GITHUB_REF:10}"
-        mv $HOME/arch-packages/*pkg.tar.zst $GITHUB_WORKSPACE/sway-colord-${VERSION:1}-x86_64.pkg.tar.zst
+    - run: mv $HOME/arch-packages/*pkg.tar.zst $GITHUB_WORKSPACE/sway-colord-${GITHUB_REF:10}-x86_64.pkg.tar.zst
     - name: Load Release URL File from release job
       uses: actions/download-artifact@v1
       with:
