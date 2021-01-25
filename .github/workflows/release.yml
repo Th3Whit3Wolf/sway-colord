@@ -9,7 +9,7 @@ on:
 
 jobs:
   make_bin:
-    name: Build Linux AMD64, ARM, AARCH64 Binaries
+    name: Build Linux AMD64, ARM, Binaries #AARCH64 doesn't build for some compilery reason
     runs-on: ubuntu-latest
     container: clux/muslrust:stable
     steps:
@@ -19,9 +19,7 @@ jobs:
          run: |
           apt-get update && apt-get install -y gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
           export HOME=/root
-          echo "Installing rustup stable"
           rustup install stable
-          echo "Setting rustup toolchain to default stable"
           rustup default stable
           rustup target add aarch64-unknown-linux-musl
           rustup target add arm-unknown-linux-musleabihf
@@ -51,15 +49,15 @@ jobs:
          with:
            name: sway-colord-linux-armhf
            path: ./target/arm-unknown-linux-musleabihf/release/sway-colord 
-       - name: Build Linux AARCH64 Binary
-         run: |
-          HOME=/root cargo build --target aarch64-unknown-linux-musl --release
-          aarch64-linux-gnu-strip target/aarch64-unknown-linux-musl/release/sway-colord
-       - name: Upload Linux ARM  Binary
-         uses: actions/upload-artifact@v1
-         with:
-           name: sway-colord-linux-aarch64
-           path: ./target/aarch64-unknown-linux-musl/release/sway-colord
+       #- name: Build Linux AARCH64 Binary
+       #  run: |
+       #   HOME=/root cargo build --target aarch64-unknown-linux-musl --release
+       #   aarch64-linux-gnu-strip target/aarch64-unknown-linux-musl/release/sway-colord
+       #- name: Upload Linux ARM  Binary
+       #  uses: actions/upload-artifact@v1
+       #  with:
+       #    name: sway-colord-linux-aarch64
+       #    path: ./target/aarch64-unknown-linux-musl/release/sway-colord
   make_alpine:
     name: Make Alpine Linux package
     runs-on: ubuntu-latest
