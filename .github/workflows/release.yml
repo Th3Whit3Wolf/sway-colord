@@ -18,7 +18,10 @@ jobs:
        - name: Pre-build
          run: |
           apt-get update && apt-get install -y gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
+          export HOME=/root
+          echo "Installing rustup stable"
           rustup install stable
+          echo "Setting rustup toolchain to default stable"
           rustup default stable
           rustup target add aarch64-unknown-linux-musl
           rustup target add arm-unknown-linux-musleabihf
