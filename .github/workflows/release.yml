@@ -191,11 +191,11 @@ jobs:
         with:
           name: sway-colord-linux-armhf
           path: ./
-      - name: Download AARCH64 Binary
-        uses: actions/download-artifact@v1
-        with:
-          name: sway-colord-linux-aarch64
-          path: ./
+      #- name: Download AARCH64 Binary
+      #  uses: actions/download-artifact@v1
+      #  with:
+      #    name: sway-colord-linux-aarch64
+      #    path: ./
       - name: Download Alpine Package
         uses: actions/download-artifact@v1
         with:
