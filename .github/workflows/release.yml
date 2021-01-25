@@ -109,7 +109,7 @@ jobs:
         - name: Upload Arch Package
           uses: actions/upload-artifact@v1
           with:
-            name: arch_linux_sway-colord-x86_64.pkg.tar.zst
+            name: sway-colord-x86_64.pkg.tar.zst
             path: ./sway-colord-x86_64.pkg.tar.zst
   make_deb:
     name: Make Deb package
@@ -206,7 +206,7 @@ jobs:
       - name: Download Arch Package
         uses: actions/download-artifact@v1
         with:
-          name: arch_linux_sway-colord-x86_64.pkg.tar.zst
+          name: sway-colord-x86_64.pkg.tar.zst
           path: ./
       - name: Download Deb Package
         uses: actions/download-artifact@v1
@@ -230,9 +230,10 @@ jobs:
            export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
            ls
   
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.apk    --file ./sway-colord.apk
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord_${{ steps.get_version.outputs.VERSION }}_amd64.deb     --file ./sway-colord_amd64.deb
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.ebuild --file ./sway-colord.ebuild
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.rpm    --file ./sway-colord.x86_64.rpm
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-amd64   --file ./sway-colord-linux-amd64
-           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-armhf   --file ./sway-colord-linux-armhf
+           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.apk         --file ./sway-colord.apk
+           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.pkg.tar.zst --file ./sway-colord-x86_64.pkg.tar.zst
+           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord_${{ steps.get_version.outputs.VERSION }}_amd64.deb          --file ./sway-colord_amd64.deb
+           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.ebuild      --file ./sway-colord.ebuild
+           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-x86_64.rpm         --file ./sway-colord.x86_64.rpm
+           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-amd64        --file ./sway-colord-linux-amd64
+           ./bin/linux/amd64/github-release upload -u Th3Whit3Wolf -r sway-colord --tag ${{ steps.get_version.outputs.FULL_TAG }} --name sway-colord-${{ steps.get_version.outputs.VERSION }}-linux-armhf        --file ./sway-colord-linux-armhf
