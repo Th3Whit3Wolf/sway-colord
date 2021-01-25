@@ -1,5 +1,19 @@
 # Sway Color Daemon
 
+<p align="center">
+  <a href="https://github.com/Th3Whit3Wolf/sway-colord/actions?query=workflow%3A%22Continuous+Integration%22">
+    <img src="https://github.com/Th3Whit3Wolf/sway-colord/workflows/Continuous%20Integration/badge.svg?branch=main" alt="rust stable build">
+  </a>
+  <a href="https://github.com/Th3Whit3Wolf/sway-colord/blob/master/LICENSE">
+    <img alt="GitHub" src="https://img.shields.io/github/license/Th3Whit3Wolf/sway-colord">
+  </a>
+  <a href="http://makeapullrequest.com">
+    <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
+  </a>
+  <br>
+  <i>Runs for the given time and is similar to the Unix <code>sleep</code> command</i>
+</p>
+
 This is a WIP daemon for sway to automatically change light and dark themes based on the time of day.
 
 ## What is currently supported?
@@ -28,10 +42,54 @@ that can be read to find out when the next timechange is from a shell script
 
 ## Install
 
+### Aline Linux
+
+```shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-x86_64.apk -o sway-colord-0.1.0-x86_64.apk
+sudo apk add --allow-untrusted sway-colord-0.1.0-x86_64.apk
+```
+
 ### Arch Linux
 
 ```shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-x86_64.pkg.tar.zst -o sway-colord-0.1.0-x86_64.pkg.tar.zst
+sudo pacman -U sway-colord-0.1.0-x86_64.pkg.tar.zst
+```
 
+### Debian/Ubuntu
+
+```shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord_0.1.0_amd64.deb -o sway-colord_0.1.0_amd64.deb
+sudo dpkg -i sway-colord_0.1.0_amd64.deb
+```
+
+### Gentoo
+
+```shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-x86_64.ebuild -o sway-colord-0.1.0-x86_64.ebuild 
+ebuild sway-colord-0.1.0-x86_64.ebuild compile
+ebuild sway-colord-0.1.0-x86_64.ebuild install
+```
+
+### RHEL
+
+```shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-x86_64.rpm -o sway-colord-0.1.0-x86_64.rpm
+sudo rpm –i sway-colord.rpm
+```
+
+### Other Linux x86-64bit distro
+
+```shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-linux-amd64 -o sway-colord
+sudo mv sway-colord /usr/bin/
+```
+
+### Linux ARM
+
+```shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-linux-amd64 -o sway-colord
+sudo mv sway-colord /usr/bin/
 ```
 
 ## Goals
