@@ -20,6 +20,8 @@ jobs:
           apt-get update && apt-get install -y gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
           rustup target add aarch64-unknown-linux-musl
           rustup target add arm-unknown-linux-musleabihf
+          rustup install stable
+          rustup default stable
           mkdir -p ~/.cargo
        - name: Build Linux AMD64 Binary
          run: |
@@ -77,7 +79,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build apk
         run: |
-          sway-colord-${{ steps.apk.outputs.version }}-r0.apk
           sed -i 's/pkgver=.*$/pkgver="'${{ steps.apk.outputs.version }}'"/g' dist/alpine/APKBUILD
           shasum=$(sha512sum sway-colord.tar.gz)
           sed -i "s/sha512sums=.*$/sha512sums=\"${shasum}\"/g" dist/alpine/APKBUILD
@@ -103,7 +104,7 @@ jobs:
         - name: Build Arch Linux package
           uses: house-of-vanity/build-arch-package@master
           with:
-            PKGBUILD: $GITHUB_WORKSPACE/.github/workflows/PKGBUILD
+            PKGBUILD: $GITHUB_WORKSPACE/dist/arch/PKGBUILD
             OUTDIR: $HOME/arch-packages
         - run: mv $HOME/arch-packages/*pkg.tar.zst sway-colord-x86_64.pkg.tar.zst
         - name: Upload Arch Package
@@ -127,11 +128,37 @@ jobs:
         with:
           name: sway-colord_amd64.deb
           path: ./target/debian/sway-colord_amd64.deb
- 
+  make_rpm:
+    name: Make RHEL package
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+     - name: Checkout code
+       uses: actions/checkout@v2
+     - name: Pre-build
+       run: |
+          export VERSION="${GITHUB_REF:11}"
+          echo "::set-output name=version::$VERSION"
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
+          --default-toolchain stable --profile minimal -y
+          source $HOME/.cargo/env
+          dnf install gcc rpmdevtools -y
+          cargo install cargo-rpm
+     - uses: actions/checkout@v2
+     - name: Build rpm
+       run: |
+         cargo build --release
+         cargo rpm build -v
+         cp target/release/rpmbuild/RPMS/x86_64/sway-colord-*.x86_64.rpm $GITHUB_WORKSPACE/sway-colord.x86_64.rpm          
+     - name: Upload binary
+       uses: actions/upload-artifact@v1
+       with:
+          name: sway-colord.x86_64.rpm
+          path: ./sway-colord.x86_64.rpm      
       
   publish:
     name: Publish release
-    needs: [make_bin, make_alpine, make_arch, make_deb]
+    needs: [make_bin, make_alpine, make_arch, make_deb, make_rpm]
     runs-on: ubuntu-latest
     steps:
       - name: Get the version (git tag)
