@@ -11,10 +11,8 @@
     <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
   </a>
   <br>
-  <i>Runs for the given time and is similar to the Unix <code>sleep</code> command</i>
+  <i>Color daemon for sway that automatically change light and dark themes based on the time of day
 </p>
-
-This is a WIP daemon for sway to automatically change light and dark themes based on the time of day.
 
 ## What is currently supported?
 
