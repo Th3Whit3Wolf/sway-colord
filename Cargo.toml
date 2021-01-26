@@ -22,7 +22,6 @@ async-recursion = "0.3.1"
 sunrise = "1.0.0"
 procfs = "0.9.1"
 libc = "0.2.82"
-
 [dependencies.async-std]
 features = ["attributes"]
 version = "1"
@@ -31,11 +30,8 @@ version = "1"
 features = ["serde_derive"]
 version = "1.0.60"
 
-
-[dev-dependencies.cargo-husky]
-git = "https://github.com/DoBi/cargo-husky"
-default-features = false # Disable features which are enabled by default
-features = ["user-hooks"]
+[dev-dependencies]
+cargo-husky = { version = "1", default-features = false, features = ["user-hooks"]}
 
 [package.metadata.rpm]
 package = "sway-colord"
