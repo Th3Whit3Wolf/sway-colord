@@ -2,7 +2,7 @@
 
 CARGO_TOML=$(echo $(git rev-parse --show-toplevel)/Cargo.toml)
 VERSION=$(cat $CARGO_TOML | grep version | head -n1 | cut -d '"' -f2)
-
+README=$(echo $(git rev-parse --show-toplevel)/README.md )
 tagref=$(grep -Po 'refs/tags/([^ ]*) ' </dev/stdin | head -n1 | cut -c11- | tr -d '[:space:]')
 
 if [[ "$tagref" == ""  ]]; then
@@ -14,8 +14,8 @@ if [[ $tagref = v* ]]; then
   if [[ "${tagref:1}" != "${VERSION}" ]]; then
     sed -i -e 's/^version = .*/version = "${tagref:1}"/' $CARGO_TOML
   fi
-  cat << EOF > $(git rev-parse --show-toplevel)/README.md 
-  # Sway Color Daemon
+  cat << EOF > $README
+# Sway Color Daemon
 
 <p align="center">
   <a href="https://github.com/Th3Whit3Wolf/sway-colord/actions?query=workflow%3A%22Continuous+Integration%22">
@@ -28,10 +28,8 @@ if [[ $tagref = v* ]]; then
     <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
   </a>
   <br>
-  <i>Runs for the given time and is similar to the Unix <code>sleep</code> command</i>
+  <i>Color daemon for sway that automatically change light and dark themes based on the time of day</i>
 </p>
-
-This is a WIP daemon for sway to automatically change light and dark themes based on the time of day.
 
 ## What is currently supported?
 
@@ -54,60 +52,60 @@ Currently the following applications will switch between light and dark colorsch
 * Spotify with [spicetify](https://github.com/khanhas/spicetify-cli)
 * Vscode
 
-Sway Color Daemon also creates `/tmp/sway-colord/dawn` & `/tmp/sway-colord/dusk` files
+Sway Color Daemon also creates \`/tmp/sway-colord/dawn\` & \`/tmp/sway-colord/dusk\` files
 that can be read to find out when the next timechange is from a shell script
 
 ## Install
 
-### Aline Linux
+### Alpine Linux
 
-```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/\${tagref}/sway-colord-\${VERSION}-x86_64.apk -o sway-colord-\${VERSION}-x86_64.apk
-sudo apk add --allow-untrusted sway-colord-\${VERSION}-x86_64.apk
-```
+\`\`\`shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/${tagref}/sway-colord-${VERSION}-x86_64.apk -o sway-colord-${VERSION}-x86_64.apk
+sudo apk add --allow-untrusted sway-colord-${VERSION}-x86_64.apk
+\`\`\`
 
 ### Arch Linux
 
-```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/\${tagref}/sway-colord-\${VERSION}-x86_64.pkg.tar.zst -o sway-colord-\${VERSION}-x86_64.pkg.tar.zst
-sudo pacman -U sway-colord-\${VERSION}-x86_64.pkg.tar.zst
-```
+\`\`\`shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/${tagref}/sway-colord-${VERSION}-x86_64.pkg.tar.zst -o sway-colord-${VERSION}-x86_64.pkg.tar.zst
+sudo pacman -U sway-colord-${VERSION}-x86_64.pkg.tar.zst
+\`\`\`
 
 ### Debian/Ubuntu
 
-```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/\${tagref}/sway-colord_\${VERSION}_amd64.deb -o sway-colord_\${VERSION}_amd64.deb
-sudo dpkg -i sway-colord_\${VERSION}_amd64.deb
-```
+\`\`\`shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/${tagref}/sway-colord_${VERSION}_amd64.deb -o sway-colord_${VERSION}_amd64.deb
+sudo dpkg -i sway-colord_${VERSION}_amd64.deb
+\`\`\`
 
 ### Gentoo
 
-```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/\${tagref}/sway-colord-\${VERSION}-x86_64.ebuild -o sway-colord-\${VERSION}-x86_64.ebuild 
-ebuild sway-colord-\${VERSION}-x86_64.ebuild compile
-ebuild sway-colord-\${VERSION}-x86_64.ebuild install
-```
+\`\`\`shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/${tagref}/sway-colord-${VERSION}-x86_64.ebuild -o sway-colord-${VERSION}-x86_64.ebuild 
+ebuild sway-colord-${VERSION}-x86_64.ebuild compile
+ebuild sway-colord-${VERSION}-x86_64.ebuild install
+\`\`\`
 
 ### RHEL
 
-```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/\${tagref}/sway-colord-\${VERSION}-x86_64.rpm -o sway-colord-\${VERSION}-x86_64.rpm
+\`\`\`shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/${tagref}/sway-colord-${VERSION}-x86_64.rpm -o sway-colord-${VERSION}-x86_64.rpm
 sudo rpm –i sway-colord.rpm
-```
+\`\`\`
 
 ### Other Linux x86-64bit distro
 
-```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/\${tagref}/sway-colord-\${VERSION}-linux-amd64 -o sway-colord
+\`\`\`shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/${tagref}/sway-colord-${VERSION}-linux-amd64 -o sway-colord
 sudo mv sway-colord /usr/bin/
-```
+\`\`\`
 
 ### Linux ARM
 
-```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/\${tagref}/sway-colord-\${VERSION}-linux-amd64 -o sway-colord
+\`\`\`shell
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/${tagref}/sway-colord-${VERSION}-linux-amd64 -o sway-colord
 sudo mv sway-colord /usr/bin/
-```
+\`\`\`
 
 ## Goals
 
@@ -123,9 +121,9 @@ sudo mv sway-colord /usr/bin/
 
 ## Instructions
 
-Create file `~/.config/sway-colord/config.ron`
+Create file \`~/.config/sway-colord/config.ron\`
 
-```ron
+\`\`\`ron
 (
     timechange: Solar(52.4045, 0.5613),
     alacritty: Some(
@@ -183,7 +181,7 @@ Create file `~/.config/sway-colord/config.ron`
 		)
     )
 )
-```
+\`\`\`
 
 ## How to get waybar theme to change automatically?
 
@@ -191,9 +189,9 @@ Waybar will change automatically with the gtk theme if you [make waybar follow t
 
 ## How to get my other utilities to switch themes with sway-colord?
 
-You can make an executable script for any utility that accepts a theme or config as a parameter. Place it in `~/.local/bin` and make sure `~/.local/bin` is in your `$PATH`. Here is an example for wofi.
+You can make an executable script for any utility that accepts a theme or config as a parameter. Place it in \`~/.local/bin\` and make sure \`~/.local/bin\` is in your \`\$PATH\`. Here is an example for wofi.
 
-```shell
+\`\`\`shell
 #!/usr/bin/env bash
 
 # place this in ~/.local/bin/wofi
@@ -208,15 +206,19 @@ else
     # Light Theme
     /usr/bin/wofi -s ~/.config/wofi/light.css
 fi
-```
+\`\`\`
+
 EOF
+  git add $README
+  git commit $README -m "Updated version"
+  git push origin main
 fi
-if [[ "$tagref" == "$ver" ]]; then
+if [[ "${tagref:1}" == "$VERSION" ]]; then
     ## tag matches ver
     exit 0
 fi
 echo "Tag name don't match version file. Preventing push."
-echo "tag name: $tagref"
-echo "version: $ver"
+echo "tag name: ${tagref:1}"
+echo "version:  $VERSION"
 exit 1
 
