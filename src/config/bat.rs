@@ -8,7 +8,7 @@ pub struct Bat {
     pub light_theme: Option<String>,
 }
 
-const BAT_SETTINGS_STARTS_WITH: &str = " --theme=";
+const BAT_SETTINGS_STARTS_WITH: &str = "--theme=";
 
 impl Bat {
     pub fn dark_mode(&self) -> Result<()> {
