@@ -11,10 +11,8 @@
     <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
   </a>
   <br>
-  <i>Runs for the given time and is similar to the Unix <code>sleep</code> command</i>
+  <i>Color daemon for sway that automatically change light and dark themes based on the time of day</i>
 </p>
-
-This is a WIP daemon for sway to automatically change light and dark themes based on the time of day.
 
 ## What is currently supported?
 
@@ -42,7 +40,7 @@ that can be read to find out when the next timechange is from a shell script
 
 ## Install
 
-### Aline Linux
+### Alpine Linux
 
 ```shell
 curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-x86_64.apk -o sway-colord-0.1.0-x86_64.apk
