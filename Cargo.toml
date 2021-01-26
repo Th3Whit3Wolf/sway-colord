@@ -8,9 +8,6 @@ description = "a daemon for sway to automatically change light and dark themes b
 readme = "README.md"
 homepage = "https://github.com/Th3Whit3Wolf/sway-colord"
 
-[features]
-default = ["cargo-husky"]
-
 [dependencies]
 anyhow = "1.0.37"
 chrono = "0.4.19"
@@ -26,7 +23,6 @@ sunrise = "1.0.0"
 procfs = "0.9.1"
 libc = "0.2.82"
 
-
 [dependencies.async-std]
 features = ["attributes"]
 version = "1"
@@ -40,7 +36,6 @@ version = "1.0.60"
 git = "https://github.com/DoBi/cargo-husky"
 default-features = false # Disable features which are enabled by default
 features = ["user-hooks"]
-optional = true
 
 [package.metadata.rpm]
 package = "sway-colord"
