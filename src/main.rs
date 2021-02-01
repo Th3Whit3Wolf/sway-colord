@@ -12,6 +12,7 @@ const DAY: i64 = 24 * 3600;
 #[async_recursion]
 async fn auto_change_rigid(conf: Config, dawn: NaiveTime, dusk: NaiveTime) -> Result<()> {
     let now: NaiveTime = Utc::now().time();
+    dbg!(&now);
     write_tmp(
         format!("{}\n", dawn.format("%H:%M:%S")),
         format!("{}\n", dusk.format("%H:%M:%S")),
@@ -50,13 +51,12 @@ async fn auto_change_solar(conf: Config, lattitude: f64, longitude: f64) -> Resu
         conf.set_dark_mode()?;
         task::sleep((sunrise - now).to_std()?).await;
     } else if now > sunset {
-        let tomorrow_morning = NaiveDateTime::from_timestamp(
-            sunrise::sunrise_sunset(lattitude, longitude, utc.year(), utc.month(), utc.day() + 1).0,
-            0,
-        );
-        dbg!("{}", tomorrow_morning - now);
+        // If it is after the sunset time then wait until midnight and run again
+        let midnight = (now + chrono::Duration::days(1)).date().and_hms(0, 0, 0);
+
+        dbg!("{}", midnight - now);
         conf.set_dark_mode()?;
-        task::sleep((tomorrow_morning - now).to_std()?).await;
+        task::sleep(midnight.signed_duration_since(now).to_std()?).await;
     } else {
         dbg!("{}", sunset - now);
         conf.set_light_mode()?;
