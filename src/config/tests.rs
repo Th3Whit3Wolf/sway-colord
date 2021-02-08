@@ -3,6 +3,18 @@ use ron::de::from_str;
 
 const CONFIG: &str = "(
     timechange: Solar(9.4045, 10.5613),
+    arbitrary_list: Some(
+        ArbitraryList(
+            arbitraries: [
+                Arbitrary(
+                    config_file: \"~/.config/tmux/tmux.conf\",
+                    dark_line: \"source-file ~/.config/tmux/colors/spacedark-theme.tmux\",
+                    light_line: \"source-file ~/.config/tmux/colors/spacelight-theme.tmux\",
+                    post_hook: Some(\"tmux source-file ~/.config/tmux/tmux.conf\")
+                )
+            ]
+        )
+    ),
     alacritty: Some(
         Alacritty(
             dark_theme: Some(\"dark\"),
@@ -68,6 +80,9 @@ const CONFIG: &str = "(
 #[test]
 fn test_read_config() {
     let conf: Config = from_str(CONFIG).unwrap();
+    if conf.arbitrary_list.is_none() {
+        panic!("Alacritty not detected")
+    }
     if conf.alacritty.is_none() {
         panic!("Alacritty not detected")
     }

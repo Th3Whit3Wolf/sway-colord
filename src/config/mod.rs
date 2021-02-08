@@ -13,6 +13,7 @@ use std::{
 };
 
 mod alacritty;
+mod arbitrary;
 mod bat;
 mod gsettings;
 mod lighting;
@@ -25,6 +26,7 @@ mod vscode;
 mod tests;
 
 pub use self::alacritty::Alacritty;
+pub use self::arbitrary::{Arbitrary, ArbitraryList};
 pub use self::bat::Bat;
 pub use self::gsettings::GSettings;
 pub use self::lighting::Lighting;
@@ -44,6 +46,7 @@ pub enum TimeChange {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
     pub timechange: TimeChange,
+    pub arbitrary_list: Option<ArbitraryList>,
     pub alacritty: Option<Alacritty>,
     pub bat: Option<Bat>,
     pub gsettings: Option<GSettings>,
@@ -57,6 +60,7 @@ impl Config {
     pub fn default() -> Config {
         Config {
             timechange: TimeChange::Rigid(String::from("07:00:00"), String::from("19:00:00")),
+            arbitrary_list: None,
             alacritty: None,
             bat: None,
             gsettings: None,
@@ -64,6 +68,17 @@ impl Config {
             mako: None,
             spotify: None,
             vscode: None,
+        }
+    }
+    pub fn is_arbitrary(&self) -> Option<ArbitraryList> {
+        if let Some(conf) = &self.arbitrary_list {
+            if conf.is_some() {
+                Some(conf.to_owned())
+            } else {
+                None
+            }
+        } else {
+            None
         }
     }
     pub fn is_alacritty(&self) -> Option<Alacritty> {
@@ -240,6 +255,9 @@ impl Config {
         }
     }
     pub fn set_light_mode(&self) -> Result<()> {
+        if let Some(arbitrary) = self.is_arbitrary() {
+            arbitrary.light_mode()?;
+        }
         if let Some(alacritty) = self.is_alacritty() {
             alacritty.light_mode()?;
         }
@@ -265,6 +283,9 @@ impl Config {
         Ok(())
     }
     pub fn set_dark_mode(&self) -> Result<()> {
+        if let Some(arbitrary) = self.is_arbitrary() {
+            arbitrary.dark_mode()?;
+        }
         if let Some(alacritty) = self.is_alacritty() {
             alacritty.dark_mode()?;
         }
