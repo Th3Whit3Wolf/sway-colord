@@ -25,9 +25,6 @@ sunrise = "1.0.0"
 procfs = "0.9.1"
 libc = "0.2.85"
 
-[dev-dependencies]
-cargo-husky = { version = "1", default-features = false, features = ["user-hooks"]}
-
 [package.metadata.rpm]
 package = "sway-colord"
 
