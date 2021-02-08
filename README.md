@@ -48,50 +48,50 @@ that can be read to find out when the next timechange is from a shell script
 ### Alpine Linux
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-x86_64.apk -o sway-colord-0.1.0-x86_64.apk
-sudo apk add --allow-untrusted sway-colord-0.1.0-x86_64.apk
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.2-x86_64.apk -o sway-colord-0.1.2-x86_64.apk
+sudo apk add --allow-untrusted sway-colord-0.1.2-x86_64.apk
 ```
 
 ### Arch Linux
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-x86_64.pkg.tar.zst -o sway-colord-0.1.0-x86_64.pkg.tar.zst
-sudo pacman -U sway-colord-0.1.0-x86_64.pkg.tar.zst
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.2-x86_64.pkg.tar.zst -o sway-colord-0.1.2-x86_64.pkg.tar.zst
+sudo pacman -U sway-colord-0.1.2-x86_64.pkg.tar.zst
 ```
 
 ### Debian/Ubuntu
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord_0.1.0_amd64.deb -o sway-colord_0.1.0_amd64.deb
-sudo dpkg -i sway-colord_0.1.0_amd64.deb
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord_0.1.2_amd64.deb -o sway-colord_0.1.2_amd64.deb
+sudo dpkg -i sway-colord_0.1.2_amd64.deb
 ```
 
 ### Gentoo
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-x86_64.ebuild -o sway-colord-0.1.0-x86_64.ebuild 
-ebuild sway-colord-0.1.0-x86_64.ebuild compile
-ebuild sway-colord-0.1.0-x86_64.ebuild install
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.2-x86_64.ebuild -o sway-colord-0.1.2-x86_64.ebuild 
+ebuild sway-colord-0.1.2-x86_64.ebuild compile
+ebuild sway-colord-0.1.2-x86_64.ebuild install
 ```
 
 ### RHEL
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-x86_64.rpm -o sway-colord-0.1.0-x86_64.rpm
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.2-x86_64.rpm -o sway-colord-0.1.2-x86_64.rpm
 sudo rpm –i sway-colord.rpm
 ```
 
 ### Other Linux x86-64bit distro
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-linux-amd64 -o sway-colord
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.2-linux-amd64 -o sway-colord
 sudo mv sway-colord /usr/bin/
 ```
 
 ### Linux ARM
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-linux-amd64 -o sway-colord
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.2-linux-amd64 -o sway-colord
 sudo mv sway-colord /usr/bin/
 ```
 
