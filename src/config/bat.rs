@@ -23,7 +23,7 @@ impl Bat {
         }
         Ok(())
     }
-    pub fn change_theme(theme: &str) -> Result<()> {
+    fn change_theme(theme: &str) -> Result<()> {
         let setting = dirs_next::home_dir()
             .expect("Error: unable to find home directory")
             .join(".config/bat/config");
