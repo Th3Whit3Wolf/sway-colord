@@ -12,7 +12,19 @@ fi
 
 if [[ $tagref = v* ]]; then
   if [[ "${tagref:1}" != "${VERSION}" ]]; then
-    sed -i -e 's/^version = .*/version = "${tagref:1}"/' $CARGO_TOML
+    echo "tag name: ${tagref:1}"
+    echo "version:  $VERSION"
+    vers="${tagref:1}"
+    sed -i  "s/^version = .*/version = \"$vers\"/" $CARGO_TOML
+    VERSION=$(cat $CARGO_TOML | grep version | head -n1 | cut -d '"' -f2)
+    if [[ "${tagref:1}" == "${VERSION}" ]]; then
+      echo "Package version succesfully updated"
+      git add $CARGO_TOML
+      git commit $CARGO_TOML -m "Updated version"
+    else
+      echo "Failed to update package version"
+      exit 1
+    fi
   fi
   cat << EOF > $README
 # Sway Color Daemon
@@ -233,7 +245,7 @@ if [[ "${tagref:1}" == "$VERSION" ]]; then
     ## tag matches ver
     exit 0
 fi
-echo "Tag name don't match version file. Preventing push."
+echo "Tag name doesn't match version file. Preventing push."
 echo "tag name: ${tagref:1}"
 echo "version:  $VERSION"
 exit 1

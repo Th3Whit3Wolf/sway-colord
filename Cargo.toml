@@ -2,7 +2,7 @@
 authors = ["David Karrick <the.white.wolf.is.1337@gmail.com>"]
 edition = "2018"
 name = "sway-colord"
-version = "0.1.0"
+version = "0.1.2"
 license = "apache"
 description = "a daemon for sway to automatically change light and dark themes based on the time of day."
 readme = "README.md"
@@ -10,25 +10,20 @@ homepage = "https://github.com/Th3Whit3Wolf/sway-colord"
 
 [dependencies]
 anyhow = "1.0.37"
+async-std = { version = "1.9", features = ["attributes"] }
 chrono = "0.4.19"
 ron = "0.6.4"
 swayipc = "3.0.0-alpha.2"
 dirs-next = "2.0.0"
 zbus = "1.8.0"
 zvariant = "2.4.0"
+serde = { version = "1.0.123", features = ["derive"] }
 serde_json = "1.0.61"
 json5 = "0.3"
 async-recursion = "0.3.1"
 sunrise = "1.0.0"
 procfs = "0.9.1"
-libc = "0.2.82"
-[dependencies.async-std]
-features = ["attributes"]
-version = "1"
-
-[dependencies.serde]
-features = ["serde_derive"]
-version = "1.0.60"
+libc = "0.2.85"
 
 [dev-dependencies]
 cargo-husky = { version = "1", default-features = false, features = ["user-hooks"]}
