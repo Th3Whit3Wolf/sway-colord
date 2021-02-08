@@ -20,6 +20,11 @@ You change choose between settings a rigid timer (change occurs at 7Am & 7PM) or
 
 Currently the following applications will switch between light and dark colorschemes automatically:
 
+* Arbitrary files
+  - Only works for files: 
+    - Only one lines needs to be changed
+    - If that line will only be on of the two options you give it
+  - Can optionally pass a command to update
 * Alacritty
 * Bat
 * GTK (on sway)
@@ -43,28 +48,28 @@ that can be read to find out when the next timechange is from a shell script
 ### Alpine Linux
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-x86_64.apk -o sway-colord-0.1.0-x86_64.apk
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-x86_64.apk -o sway-colord-0.1.0-x86_64.apk
 sudo apk add --allow-untrusted sway-colord-0.1.0-x86_64.apk
 ```
 
 ### Arch Linux
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-x86_64.pkg.tar.zst -o sway-colord-0.1.0-x86_64.pkg.tar.zst
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-x86_64.pkg.tar.zst -o sway-colord-0.1.0-x86_64.pkg.tar.zst
 sudo pacman -U sway-colord-0.1.0-x86_64.pkg.tar.zst
 ```
 
 ### Debian/Ubuntu
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord_0.1.0_amd64.deb -o sway-colord_0.1.0_amd64.deb
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord_0.1.0_amd64.deb -o sway-colord_0.1.0_amd64.deb
 sudo dpkg -i sway-colord_0.1.0_amd64.deb
 ```
 
 ### Gentoo
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-x86_64.ebuild -o sway-colord-0.1.0-x86_64.ebuild 
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-x86_64.ebuild -o sway-colord-0.1.0-x86_64.ebuild 
 ebuild sway-colord-0.1.0-x86_64.ebuild compile
 ebuild sway-colord-0.1.0-x86_64.ebuild install
 ```
@@ -72,21 +77,21 @@ ebuild sway-colord-0.1.0-x86_64.ebuild install
 ### RHEL
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-x86_64.rpm -o sway-colord-0.1.0-x86_64.rpm
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-x86_64.rpm -o sway-colord-0.1.0-x86_64.rpm
 sudo rpm –i sway-colord.rpm
 ```
 
 ### Other Linux x86-64bit distro
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-linux-amd64 -o sway-colord
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-linux-amd64 -o sway-colord
 sudo mv sway-colord /usr/bin/
 ```
 
 ### Linux ARM
 
 ```shell
-curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.0/sway-colord-0.1.0-linux-amd64 -o sway-colord
+curl -Lj https://github.com/Th3Whit3Wolf/sway-colord/releases/download/v0.1.2/sway-colord-0.1.0-linux-amd64 -o sway-colord
 sudo mv sway-colord /usr/bin/
 ```
 
@@ -108,61 +113,72 @@ Create file `~/.config/sway-colord/config.ron`
 
 ```ron
 (
-    timechange: Solar(52.4045, 0.5613),
-    alacritty: Some(
-		Alacritty(
-			dark_theme: Some("dark"),
-			light_theme: Some("light")
-		)
-    ),
-    bat: Some(
-		Bat(
-			dark_theme: Some("OneHalfDark"),
-			light_theme: Some("OneHalfLight")
-		)
-    ),
-    gsettings: Some(
-		GSettings(
-			dark_gtk_theme: Some("Space-Dark"),
-			dark_icon_theme: Some("Space-Dark"),
-			dark_cursor_theme: None,
-			dark_font_name: None,
-			light_gtk_theme: Some("Space-Light"),
-			light_icon_theme: Some("Space-Light"),
-			light_cursor_theme: None,
-			light_font_name: None,
-		)
-    ),
-    lighting: Some(
-		Lighting(
-			monitor: Some(
-				Monitor(
-					device: "amdgpu_bl0",
-					dark_perc: 20,
-					light_perc: 50
-				)
-			),
-			keyboard: Some(
-				Keyboard(
-					device: "asus::kbd_backlight",
-					dark_perc: 34,
-					light_perc: 0
-				)
-			)
-		)
-    ),
-    mako: Some(
-		Mako(
-	    	dark_theme: Some("Dark"),
-	    	light_theme: Some("Light")
-		)
-    ),
-    vscode: Some(
-		VSCode(
-	    	dark_theme: Some("Spacemacs - dark"),
-	    	light_theme: Some("Spacemacs - light")
-		)
+  timechange: Solar(52.4045, 0.5613),
+  ArbitraryList(
+          arbitraries: [
+              Arbitrary(
+                  config_file: "~/.config/tmux/tmux.conf",
+                  dark_line: "source-file ~/.config/tmux/colors/spacedark-theme.tmux",
+                  light_line: "source-file                    ~/.config/tmux/colors/spacelight-theme.tmux",
+                  post_hook: Some("tmux source-file ~/.config/tmux/tmux.conf")
+              )
+          ]
+      )
+  ),
+  alacritty: Some(
+    Alacritty(
+      dark_theme: Some("dark"),
+      light_theme: Some("light")
     )
+  ),
+  bat: Some(
+    Bat(
+      dark_theme: Some("OneHalfDark"),
+      light_theme: Some("OneHalfLight")
+    )
+  ),
+  gsettings: Some(
+    GSettings(
+      dark_gtk_theme: Some("Space-Dark"),
+      dark_icon_theme: Some("Space-Dark"),
+      dark_cursor_theme: None,
+      dark_font_name: None,
+      light_gtk_theme: Some("Space-Light"),
+      light_icon_theme: Some("Space-Light"),
+      light_cursor_theme: None,
+      light_font_name: None,
+    )
+  ),
+  lighting: Some(
+    Lighting(
+      monitor: Some(
+        Monitor(
+          device: "amdgpu_bl0",
+          dark_perc: 20,
+          light_perc: 50
+        )
+      ),
+      keyboard: Some(
+        Keyboard(
+          device: "asus::kbd_backlight",
+          dark_perc: 34,
+          light_perc: 0
+        )
+      )
+    )
+  ),
+  mako: Some(
+    Mako(
+        dark_theme: Some("Dark"),
+        light_theme: Some("Light")
+    )
+  ),
+  vscode: Some(
+    VSCode(
+        dark_theme: Some("Spacemacs - dark"),
+        light_theme: Some("Spacemacs - light")
+    )
+  )
 )
 ```
 
